@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Post;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
- */
+
 class UserFactory extends Factory
 {
     /**
@@ -16,18 +16,14 @@ class UserFactory extends Factory
      */
     protected static ?string $password;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            // 'avatar' => null,
+            'username' => fake()->userName(),
+            'pseudo' => fake()->optional()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => static::$password ??= Hash::make(env('DEFAULT_USER_PASSWORD')),
             'remember_token' => Str::random(10),
         ];
     }
@@ -40,5 +36,28 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    /**
+     * Indicate that the model must be a super admin.
+     */
+    public function is_super_admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_super_admin' => true,
+        ]);
+    }
+
+    /**
+     * Indicate that the model must have a post.
+     */
+    public function withPost(): static
+    {
+        return $this->afterCreating(function (User $user){
+            Post::create([
+                'message' => fake()->text(400),
+                'user_id' => $user->id
+            ]);
+        });
     }
 }
