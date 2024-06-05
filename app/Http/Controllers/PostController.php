@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostRequest;
 use App\Models\Post;
 use App\Http\Requests\UpdatePostRequest;
 use App\Repositories\PostRepository;
@@ -17,7 +18,6 @@ class PostController extends Controller
     public function index()
     {
         return response()->json([
-            'ok' => true,
             'message' => 'Posts index.',
             'data' => $this->postRepo->all()
         ]);
@@ -26,8 +26,20 @@ class PostController extends Controller
     public function show(Post $post)
     {
         return response()->json([
-            'ok' => true,
             'message' => 'Post show.',
+            'data' => $post
+        ]);
+    }
+
+    public function store(StorePostRequest $req)
+    {
+        $post = Post::create([
+            ...$req->validated(),
+            'user_id' => auth()->id()
+        ]);
+
+        return response()->json([
+            'message' => 'Post created succesfully.',
             'data' => $post
         ]);
     }
@@ -37,7 +49,6 @@ class PostController extends Controller
         $post->update($request->validated());
 
         return response()->json([
-            'ok' => true,
             'message'=> 'Post updated.',
             'data' => $post
         ], 201);
@@ -46,7 +57,6 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         return response()->json([
-            'ok' => true,
             'message'=> 'Post deleted.',
             'data' => $post->delete()
         ]);

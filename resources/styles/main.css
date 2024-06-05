@@ -1,0 +1,36 @@
+@keyframes rotate {
+    from {
+        transform: rotateZ(0deg);
+    }
+  
+    to {
+        transform: rotateZ(360deg);
+    }
+}
+
+@tailwind base;
+
+@layer base {
+    a {
+        @apply text-indigo-600 text-shadow-indigo-300
+    }
+}
+
+@tailwind components;
+
+@tailwind utilities;
+
+@layer utilities {
+    .flex-center {
+        align-items: center;
+        justify-content: center;   
+    }
+
+    .text-shadow-indigo-300 {
+        text-shadow: #a5b4fc 0px 0 1px;
+    }
+
+    .animation-rotate {
+        animation: rotate linear 1s infinite;
+    }
+}

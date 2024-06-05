@@ -14,7 +14,7 @@ class UpdatePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'message' => 'string|between:2,200'
         ];
     }
 }
