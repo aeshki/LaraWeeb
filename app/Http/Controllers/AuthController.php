@@ -16,7 +16,7 @@ class AuthController extends Controller
         if (!auth()->attempt($req->validated())) {
             return response()->json([
                 'errors' => [
-                    'email' => [ 'The provided credentials are incorrect.' ]
+                    'global' => 'The provided credentials are incorrect.'
                 ]
             ], 403);
         };

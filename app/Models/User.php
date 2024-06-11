@@ -20,6 +20,8 @@ class User extends Authenticatable
     ];
 
     protected $hidden = [
+        'email',
+        'updated_at',
         'is_super_admin',
         'email_verified_at',
         'password',
@@ -32,5 +34,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return is_numeric($value) ? $this->where('id', $value)->firstOrFail() :  $this->where('username', $value)->firstOrFail();
+    }
+
+    public function posts()
+    {   
+        return $this->hasMany(Post::class);
     }
 }

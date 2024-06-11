@@ -14,8 +14,8 @@ const loadingColor = ref('bg-indigo-400 cursor-progress');
 
 <template>
     <button
+        class='flex flex-center text-white p-2 rounded-xl uppercase font-semibold shadow-md min-h-10 select-none transition-all duration-100'
         :disabled="loading"
-        class='flex flex-center text-white p-2 rounded-xl uppercase font-semibold shadow-md min-h-10 transition-all duration-100'
         :class='props.loading ? loadingColor : defaultColor'
     >
         <ProgressIcon

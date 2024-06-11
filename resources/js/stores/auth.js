@@ -31,12 +31,38 @@ export const useAuthStore = defineStore('auth', () => {
     async function handleLogin(formData) {
         await getCSRFToken();
 
-        return await axios.post('auth/login', formData)
+        return await axios.post('/auth/login', formData)
             .then((rep) => {
                 user.value = rep.data.user;
                 this.router.push('/');
             })
-            .catch((err) => err.response?.data)
+            .catch((err) => err.response?.data);
+    }
+
+    async function handleRegister(formData) {
+        await getCSRFToken();
+
+        return await axios.post('/auth/register', formData)
+            .then((rep) => {
+                user.value = rep.data.user;
+                this.router.push('/feed');
+            })
+            .catch((err) => err.response?.data);
+    }
+
+    async function handleLogout() {
+        return await axios.get('/auth/logout').then(() => {
+            $reset();
+            this.router.push('/auth/login');
+        });
+    }
+
+    async function updateUser(formData) {
+        return await axios.patch(`/api/users/${user.value.id}`, formData)
+            .then(() => {
+                user.value = { ...user.value, ...formData };
+                this.router.push(`/@${user.value.username}`)
+            });
     }
 
     function $reset() {
@@ -48,62 +74,9 @@ export const useAuthStore = defineStore('auth', () => {
         getCSRFToken,
         isAuthenticate,
         handleLogin,
+        handleRegister,
+        handleLogout,
+        updateUser,
         $reset
     }
 });
-
-// state: () => ({
-//     authUser: null,
-// }),
-// getters: {
-//     user: (state) => state.authUser,
-//     isLoggin: (state) => !!state.authUser
-// },
-// actions:  {
-//     async getToken() {
-//         await axios.get('/sanctum/csrf-cookie');
-//     },
-//     async getUser() {
-//         return await axios.get('api/users/@me')
-//             .then((rep) => this.authUser = rep.data.data)
-//             .catch(() => {
-//                 this.authUser = null
-//                 this.router.push('/login');
-//             });
-//     },
-//     async handleLogin(data) {
-//         await this.getToken().then(async () => {
-//             const rep = await axios.post('/auth/login', data);
-            
-//             this.authUser = rep.data;
-
-//             this.router.push('/');
-//         });
-//     },
-//     async handleRegister(data) {
-//         await this.getToken().then(async () => {
-//             const rep = await axios.post('/auth/register', data);
-            
-//             this.authUser = rep.data;
-
-//             this.router.push('/');
-//         });
-//     },
-//     async handleLogout() {
-//         await axios.post('/auth/logout');
-//         this.authUser = null;
-//         this.router.push('/login');
-//         this.$reset();
-//     },
-//     async handleSendVerificationEmail() {
-//         return await axios.post('/auth/email/verification');
-//     },
-//     async getDevices() {
-//         return (await axios.get('/api/devices')).data.devices;
-//     },
-//     async revokeSession(sessionId) {
-//         return await axios.post('/auth/logout', {
-//             session_token: sessionId
-//         });
-//     }
-// },

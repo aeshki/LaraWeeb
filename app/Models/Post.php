@@ -8,23 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
-
-    protected $with = [
-        'author'
-    ];
-
+    
     protected $fillable = [
         'message',
         'user_id'
     ];
 
     protected $hidden = [
-        'user_id'
+        'user_id',
+        'updated_at'
     ];
 
     public function author()
     {   
         return $this->belongsTo(User::class, 'user_id');
     }
-
 }

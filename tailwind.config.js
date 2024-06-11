@@ -4,7 +4,14 @@ export default {
     './resources/**/*.{js,vue,php}'
   ],
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        'mobileSmall': '320px',
+        'mobile': '375px',
+        'mobileLarge': '425px',
+        'tablette': '768px'
+      }
+    }
   },
   plugins: [],
 }

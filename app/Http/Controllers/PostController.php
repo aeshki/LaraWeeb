@@ -19,7 +19,9 @@ class PostController extends Controller
     {
         return response()->json([
             'message' => 'Posts index.',
-            'data' => $this->postRepo->all()
+            'posts' => $this->postRepo
+                ->all()
+                ->load('author')
         ]);
     }
 
@@ -27,7 +29,7 @@ class PostController extends Controller
     {
         return response()->json([
             'message' => 'Post show.',
-            'data' => $post
+            'post' => $post->load('author')
         ]);
     }
 
@@ -40,7 +42,7 @@ class PostController extends Controller
 
         return response()->json([
             'message' => 'Post created succesfully.',
-            'data' => $post
+            'post' => $post
         ]);
     }
 
@@ -50,7 +52,7 @@ class PostController extends Controller
 
         return response()->json([
             'message'=> 'Post updated.',
-            'data' => $post
+            'post' => $post
         ], 201);
     }
 
@@ -58,7 +60,7 @@ class PostController extends Controller
     {
         return response()->json([
             'message'=> 'Post deleted.',
-            'data' => $post->delete()
+            'post' => $post->delete()
         ]);
     }
 

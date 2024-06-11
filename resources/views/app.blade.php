@@ -14,7 +14,7 @@
     <body class='h-full'>
         <div
             id='app'
-            class='bg-slate-50 h-full'
+            class='bg-zinc-900 h-full'
         ></div>
         @vite('resources/js/app.js')
     </body>

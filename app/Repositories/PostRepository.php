@@ -10,4 +10,6 @@ class PostRepository extends BaseRepository
     {
         parent::__construct($post);
     }
+
+    
 }

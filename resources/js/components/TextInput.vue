@@ -13,8 +13,8 @@ const props = defineProps([
 const model = defineModel();
 
 const defaultColor = ref('outline-zinc-300 focus:outline-zinc-500 focus:outline-offset-2 hover:outline-zinc-400');
-const disabledColor = ref('outline-zinc-400 cursor-not-allowed');
 const errorColor = ref('outline-red-300 focus:outline-red-500 focus:outline-offset-2 hover:outline-red-400');
+const disabledColor = ref('outline-zinc-400 cursor-not-allowed');
 </script>
 
 <template>
@@ -26,7 +26,7 @@ const errorColor = ref('outline-red-300 focus:outline-red-500 focus:outline-offs
             {{ label }}
             <span
                 v-if='required !== undefined'
-                class='text-red-500'
+                class='text-red-500 select-none'
             >*</span>
         </label>
         <input
