@@ -1,7 +1,6 @@
 <script setup>
+import { LoaderCircle } from 'lucide-vue-next';
 import { ref } from 'vue';
-
-import ProgressIcon from '@/components/icons/ProgressIcon.vue';
 
 const props = defineProps([
     'text',
@@ -18,7 +17,7 @@ const loadingColor = ref('bg-indigo-400 cursor-progress');
         :disabled="loading"
         :class='props.loading ? loadingColor : defaultColor'
     >
-        <ProgressIcon
+        <LoaderCircle
             class='animation-rotate w-fit'
             v-if='loading'
         />

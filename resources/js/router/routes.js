@@ -24,6 +24,10 @@ export default [
                 component: () => import('@/views/UserProfile.vue')
             },
             {
+                path: 'posts/:id',
+                component: () => import('@/views/UserPost.vue')
+            },
+            {
                 path: 'settings/profile',
                 component: () => import('@/views/UserProfileEdit.vue')
             }

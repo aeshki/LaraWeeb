@@ -23,10 +23,14 @@ class UpdateUserRequest extends FormRequest
             'username' => [
                 Rule::unique('users', 'username')->ignore($this->user)
             ],
+            'bio' => 'nullable|string|between:2,400',
             'email' => [
                 Rule::unique('users', 'email')->ignore($this->user),
                 'email'
             ],
+            'favorite_anime' => 'nullable|string',
+            'favorite_manga' => 'nullable|string',
+            'favorite_webtoon' => 'nullable|string'
         ];
     }
 }

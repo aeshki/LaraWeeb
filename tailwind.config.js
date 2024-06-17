@@ -10,6 +10,14 @@ export default {
         'mobile': '375px',
         'mobileLarge': '425px',
         'tablette': '768px'
+      },
+      keyframes: {
+        shimmer: {
+          '100%': { transform: 'translateX(100%)' }
+        }
+      },
+      animation: {
+        shimmer: 'shimmer 1.4s infinite'
       }
     }
   },

@@ -1,5 +1,7 @@
 <script setup>
-defineProps({
+import { onMounted, ref } from 'vue';
+
+const props = defineProps({
     'id': String,
     'type': String,
     'label': String,
@@ -7,11 +9,33 @@ defineProps({
     'invalid': Boolean,
     'required': Boolean,
     'disabled': Boolean,
-    'rows': Number,
-    'cols': Number
+    'rows': [String, Number],
+    'cols': [String, Number],
+    'autoSize': {
+        type: Boolean,
+        default: true
+    },
+    'maxHeight': {
+        type: String,
+        default: '120px'
+    }
 });
 
 const change = defineModel();
+
+const input = ref(null);
+
+const adjustHeight = () => {
+    if (!props.autoSize) {
+        return;
+    }
+
+    input.value.style.maxHeight = props.maxHeight;
+    input.value.style.height = 'auto';
+    input.value.style.height = `${input.value.scrollHeight}px`;
+}
+
+onMounted(() => adjustHeight());
 
 const styles = {
   default: 'outline-neutral-600 focus:outline-neutral-500 focus:outline-offset-2 hover:outline-neutral-400',
@@ -24,7 +48,7 @@ const styles = {
     <div class='flex flex-col gap-2 text-white'>
         <label
             class='font-semibold uppercase text-sm'
-            :class="required ? `after:content-['*'] after:ml-1 after:text-red-600` : ''"
+            :class="required && label ? `after:content-['*'] after:ml-1 after:text-red-600` : ''"
             :id='id'
         >{{ label }}</label>
         <textarea
@@ -39,6 +63,8 @@ const styles = {
             class='resize-none bg-transparent outline outline-1 p-2 text-sm rounded-sm transition-all duration-100'
             autocomplete='off'
             v-model='change' 
+            @input='adjustHeight'
+            ref='input'
         ></textarea>
     </div>
 </template>

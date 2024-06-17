@@ -1,5 +1,6 @@
 <script setup>
 import TextInput from '@/components/inputs/TextInput.vue';
+import AreaInput from '@/components/inputs/AreaInput.vue';
 import RoundedButton from '@/components/inputs/RoundedButton.vue';
 
 import { ref, reactive } from 'vue';
@@ -11,7 +12,11 @@ const isLoaded = ref(false);
 const form = reactive({
   pseudo: authStore.user.pseudo,
   username: authStore.user.username,
-  email: authStore.user.email
+  bio: authStore.user.bio,
+  email: authStore.user.email,
+  favorite_anime: authStore.user.favorite_anime,
+  favorite_manga: authStore.user.favorite_manga,
+  favorite_webtoon: authStore.user.favorite_webtoon
 });
 
 const handleSubmit = () => {
@@ -23,23 +28,30 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <div class='h-full p-4'>
+  <div class='h-full p-4 overflow-y-scroll'>
     <form @submit.prevent='handleSubmit' class='flex flex-col gap-4'>
       <TextInput
         id='pseudo'
-        type='text'
         label='Pseudo'
         :disabled='isLoaded'
         v-model='form.pseudo'
       />
+
       <TextInput
         id='username'
-        type='text'
         label='Username'
         :disabled='isLoaded'
         required
         v-model='form.username'
       />
+
+      <AreaInput
+        id='Bio'
+        label='Bio'
+        :disabled='isLoaded'
+        v-model='form.bio'
+      />
+
       <TextInput
         id='email'
         type='email'
@@ -48,6 +60,28 @@ const handleSubmit = () => {
         required
         v-model='form.email'
       />
+
+      <TextInput
+        id='favorite_anime'
+        label='Favorite anime'
+        :disabled='isLoaded'
+        v-model='form.favorite_anime'
+      />
+
+      <TextInput
+        id='favorite_manga'
+        label='Favorite manga'
+        :disabled='isLoaded'
+        v-model='form.favorite_manga'
+      />
+
+      <TextInput
+        id='favorite_webtoon'
+        label='Favorite webtoon'
+        :disabled='isLoaded'
+        v-model='form.favorite_webtoon'
+      />
+      
       <RoundedButton
         text='Sauvegarder'
         :loading='false'

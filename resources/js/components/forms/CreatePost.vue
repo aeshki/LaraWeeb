@@ -6,6 +6,7 @@ import { reactive } from 'vue';
 // COMPONENTS
 import AreaInput from '@/components/inputs/AreaInput.vue';
 import RoundedButton from '@/components/inputs/RoundedButton.vue';
+import UserAvatar from '@/components/User/Avatar.vue';
 
 const form = reactive({
   message: ''
@@ -17,15 +18,15 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <div class='p-4'>
+  <div class='flex gap-4 p-4'>
+    <UserAvatar />
     <form
       @submit.prevent='handleSubmit'
-      class='flex flex-col gap-4 text-slate-50'
+      class='flex flex-col gap-4 text-slate-50 w-full'
     >
       <AreaInput
         id='message'
         type='text'
-        label='Message'
         placeholder='Dite quelque chose..'
         required
         v-model='form.message'

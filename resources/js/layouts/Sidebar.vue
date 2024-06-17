@@ -1,4 +1,5 @@
 <script setup>
+import UserAvatar from '@/components/User/Avatar.vue';
 import { Home, Search } from 'lucide-vue-next';
 
 import { useAuthStore } from '@/stores/auth';
@@ -8,7 +9,7 @@ const authStore = useAuthStore();
 
 <template>
   <aside class='bg-zinc-900 text-zinc-50 p-4 border-t border-neutral-600 sm sm:border-r sm:border-t-0'>
-    <nav class='flex sm:flex-col gap-4 justify-around sm:gap-4'>
+    <nav class='flex sm:flex-col gap-4 justify-around sm:gap-4 items-center'>
         <ul>
             <li>
                 <RouterLink
@@ -31,14 +32,9 @@ const authStore = useAuthStore();
         </ul>
         <ul>
             <li>
-                <RouterLink
-                    class='rounded-full p-2 group flex gap-1 text-white [&.exact-active]:bg-neutral-500/70 transition-all duration-200'
-                    :to='"/@" + authStore.user.username'
-                >
-                    <img
-                        class='h-7 w-7 bg-zinc-100 rounded-full'
-                    />
-                </RouterLink>
+                <UserAvatar class='h-7'
+                            :to='`/@${authStore.user.username}`'
+                />
             </li>
         </ul>
     </nav>

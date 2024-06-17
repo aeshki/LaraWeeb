@@ -11,11 +11,19 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
 
+            $table->string('banner_color')->nullable();
+
             $table->string('avatar')->nullable();
 
             $table->string('pseudo')->nullable();
 
             $table->string('username')->unique();
+
+            $table->string('bio')->nullable();
+
+            $table->string('favorite_anime')->nullable();
+            $table->string('favorite_manga')->nullable();
+            $table->string('favorite_webtoon')->nullable();
 
             $table->string('email')->unique();
 

@@ -16,6 +16,7 @@ axios.get('/api/posts')
         <Post
             v-for='post of posts'
             :key='post.id'
+            :id='post.id'
             :pseudo='post.author.pseudo'
             :username='post.author.username'
             :message='post.message'

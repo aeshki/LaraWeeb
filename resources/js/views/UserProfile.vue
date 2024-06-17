@@ -1,14 +1,21 @@
 <script setup>
 // BUILT-IN
 import axios from 'axios';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 // COMPONENTS
-import SkeletonUserProfile from '@/views/SkeletonUserProfile.vue';
+import BackNavigationBar from '@/components/BackNavigationBar.vue';
+import UserAvatar from '@/components/User/Avatar.vue';
+import SkeletonLoader from '@/components/SkeletonLoader.vue';
 import Post from '@/components/Post.vue';
 import RoundedButton from '@/components/inputs/RoundedButton.vue';
-import { CalendarDays } from 'lucide-vue-next';
+import {
+  Tv,
+  Book,
+  Smartphone,
+  CalendarDays
+} from 'lucide-vue-next';
 
 // STORE
 import { useAuthStore } from '@/stores/auth';
@@ -17,10 +24,15 @@ import { useAuthStore } from '@/stores/auth';
 const route = useRoute();
 const authStore = useAuthStore();
 const user = ref({});
+const posts = ref([]);
 
 // TEMP
 const code = ref(null);
 const isLoading = ref(true);
+
+const isMyProfil = computed(() => {
+  return !isLoading.value ? (user.value.username === authStore.user.username) : true;
+});
 
 // LOGIC
 watch(() => route.params.username, (username) => {
@@ -28,36 +40,61 @@ watch(() => route.params.username, (username) => {
 
   axios.get(`/api/users/${username}`)
     .then((res) => {
-      user.value = res.data.user
+      user.value = res.data.user;
+      posts.value = res.data.user.posts.reverse();
       code.value = res.status;
     })
     .catch((err) => code.value = err.response.status)
     .finally(() => isLoading.value = false);
 }, { immediate: true });
 
+const removePost = (postId) => {
+  posts.value = posts.value.filter((post) => post.id !== postId);
+}
 </script>
 
 <template>
-  <SkeletonUserProfile v-if='isLoading' />
-  <div v-else class='h-full overflow-y-scroll bg-zinc-900 text-slate-50 sm:w-full'>
+  <div class='h-full overflow-y-scroll bg-zinc-900 text-slate-50 sm:w-full'>
+    <BackNavigationBar
+      v-if='!isMyProfil'
+      :title='user.pseudo ?? user.username'
+    />
     <div class='flex justify-between bg-zinc-900 border-b border-neutral-600 p-4'>
-      <div class='flex flex-col gap-4'>
-        <div class='flex gap-4 items-end'>
-          <img
-            class='bg-white w-12 h-12 rounded-full'
-          />
-          <div class='flex flex-col h-full justify-center'>
-            <template v-if='code !== 404'>
-              <p class='text-white font-semibold text-lg'>{{ user.pseudo ?? user.username }}</p>
-              <p class='text-neutral-400 text-xs'>@{{ user.username }}</p>
-            </template>
+      <div class='flex flex-col gap-4 w-full'>
+        <div class='flex justify-between'>
+          <div class='flex gap-4 items-end'>
+            <UserAvatar
+              :isLoading='isLoading'
+            />
 
-            <p v-else class='text-white font-semibold text-lg justify-self-center'>Utilisateur introuvable</p>
+            <div class='flex flex-col h-full justify-center'>
+              <template v-if='isLoading'>
+                <SkeletonLoader class='w-32 h-4' />
+                <SkeletonLoader class='w-24 h-3 mt-2' />
+              </template>
+              <template v-else>
+                <p class='text-white font-semibold text-lg'>{{ user.pseudo ?? user.username }}</p>
+                <p class='text-neutral-400 text-xs'>@{{ user.username }}</p>
+              </template>
+
+              <!-- <p v-else class='text-white font-semibold text-lg justify-self-center'>Utilisateur introuvable</p> -->
+            </div>
           </div>
 
+          <RoundedButton
+            v-if='isMyProfil'
+            to='/settings/profile'
+            text='Edit profil'
+          />
         </div>
 
-        <template v-if='code !== 404'>
+        <p v-if='user.bio'>{{ user.bio }}</p>
+
+        <template v-if='isLoading'>
+          <SkeletonLoader class='w-48 h-3' />
+          <SkeletonLoader class='w-32 h-4 mt-3' />
+        </template>
+        <template v-else >
           <div class='flex gap-1 items-center text-neutral-400'>
             <CalendarDays class='w-5 h-5' />
 
@@ -71,34 +108,53 @@ watch(() => route.params.username, (username) => {
             </p>
           </div>
 
+          <div v-if='user.favorite_anime'
+               class='flex gap-1 text-neutral-400'>
+            <Tv class='h-5 w-5' />
+            <p>Favorite anime <b>{{ user.favorite_anime }}</b></p>
+          </div>
+
+          <div v-if='user.favorite_manga'
+               class='flex gap-1 text-neutral-400'>
+            <Book class='h-5 w-5' />
+            <p>Favorite manga <b>{{ user.favorite_manga }}</b></p>
+          </div>
+
+          <div v-if='user.favorite_webtoon'
+               class='flex gap-1 text-neutral-400'>
+            <Smartphone class='h-5 w-5' />
+            <p>Favorite webtoon <b>{{ user.favorite_webtoon }}</b></p>
+          </div>
+
           <div>
-            <p>{{ user.posts?.length }} <span class='text-neutral-400'>publications</span></p>
+            <p>{{ posts.length }} <span class='text-neutral-400'>publications</span></p>
           </div>
         </template>
       </div>
-
-      <RoundedButton
-        v-if='user.username === authStore.user.username'
-        to='/settings/profile'
-        text='Edit profil'
-      />
     </div>
 
     <ul
-      v-if='user.posts?.length > 0'
+      v-if='posts.length > 0'
       class='flex flex-col divide-y divide-neutral-600 border-b border-neutral-600'
     >
       <Post
-          v-for='post of user.posts.reverse()'
+          v-for='post of posts'
           :key='post.id'
+          :id='post.id'
+          :username='user.username'
           :message='post.message'
           :createdAt='post.created_at'
+          :displayUserInfo='false'
+          :isLoading='isLoading'
+          :canEdit='isMyProfil'
+          :canDelete='isMyProfil'
+          @destroy="(postId) => removePost(postId)"
       />
-    </ul>
 
+    </ul>
     <p
-      v-else-if='code !== 404'
+      v-else-if='!isLoading'
       class='text-white w-full text-center p-4'
-    >Aucune publication :(</p>
+    >No publications :(</p>
   </div>
 </template>

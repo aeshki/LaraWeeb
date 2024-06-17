@@ -58,6 +58,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     async function updateUser(formData) {
+        console.log(formData)
         return await axios.patch(`/api/users/${user.value.id}`, formData)
             .then(() => {
                 user.value = { ...user.value, ...formData };
