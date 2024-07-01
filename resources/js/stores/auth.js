@@ -45,7 +45,7 @@ export const useAuthStore = defineStore('auth', () => {
         return await axios.post('/auth/register', formData)
             .then((rep) => {
                 user.value = rep.data.user;
-                this.router.push('/feed');
+                this.router.push('/');
             })
             .catch((err) => err.response?.data);
     }

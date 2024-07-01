@@ -1,7 +1,5 @@
 <script setup>
-import TextInput from '@/components/inputs/TextInput.vue';
-import AreaInput from '@/components/inputs/AreaInput.vue';
-import RoundedButton from '@/components/inputs/RoundedButton.vue';
+import { RoundedButton, AreaInput, TextInput } from '@/components/common';
 
 import { ref, reactive } from 'vue';
 import { useAuthStore } from '@/stores/auth';
@@ -28,7 +26,7 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <div class='h-full p-4 overflow-y-scroll'>
+  <div class='p-4'>
     <form @submit.prevent='handleSubmit' class='flex flex-col gap-4'>
       <TextInput
         id='pseudo'

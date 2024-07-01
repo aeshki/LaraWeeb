@@ -4,9 +4,8 @@ import axios from 'axios';
 import { reactive } from 'vue';
 
 // COMPONENTS
-import AreaInput from '@/components/inputs/AreaInput.vue';
-import RoundedButton from '@/components/inputs/RoundedButton.vue';
-import UserAvatar from '@/components/User/Avatar.vue';
+import { RoundedButton, AreaInput } from '@/components/common';
+import { UserAvatar } from '@/components/user';
 
 const form = reactive({
   message: ''

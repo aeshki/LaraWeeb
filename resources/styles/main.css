@@ -11,6 +11,10 @@
 @tailwind base;
 
 @layer base {
+    /* *::-webkit-scrollbar {
+        display: none
+    } */
+
     a {
         @apply text-indigo-600 text-shadow-indigo-300
     }
@@ -20,7 +24,7 @@
 
 @layer components {
     .form-authenticate {
-        @apply flex flex-col gap-8 bg-zinc-100 z-10 m-4 mobile:rounded-2xl mobile:shadow-2xl mobile:px-7 mobile:py-6 tablette:px-10 tablette:py-9
+        @apply flex flex-col gap-8 bg-zinc-900 text-zinc-50 z-10 m-4 mobile:rounded-2xl mobile:shadow-2xl mobile:px-7 mobile:py-6 tablette:px-10 tablette:py-9
     }
   }
 

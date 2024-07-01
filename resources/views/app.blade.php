@@ -12,10 +12,7 @@
         @vite('resources/styles/main.css')
     </head>
     <body class='h-full'>
-        <div
-            id='app'
-            class='bg-zinc-900 h-full'
-        ></div>
+        <div id='app' class='bg-zinc-900 h-full'></div>
         @vite('resources/js/app.js')
     </body>
 </html>

@@ -15,7 +15,7 @@ router.beforeEach(async (to) => {
     const authStore = useAuthStore();
     const isAuthenticate = await authStore.isAuthenticate();
 
-    if ((to.path === '/auth/login' || to.path === '/auth/register' || to.path === '/app') && isAuthenticate) return '/feed'
+    if ((to.path === '/auth/login' || to.path === '/auth/register' || to.path === '/app') && isAuthenticate) return '/'
     else if (to.matched.some((record) => record.meta.requiresAuth) && !isAuthenticate) return '/auth/login'
 });
 

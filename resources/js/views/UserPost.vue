@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router';
 
 const route = useRoute();
 
-import Post from '@/components/Post.vue';
+import Post from '@/components/PostCard.vue';
 import BackNavigationBar from '@/components/BackNavigationBar.vue';
 
 const postData = ref({});

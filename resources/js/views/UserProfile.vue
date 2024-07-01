@@ -5,11 +5,13 @@ import { ref, watch, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 // COMPONENTS
+
 import BackNavigationBar from '@/components/BackNavigationBar.vue';
-import UserAvatar from '@/components/User/Avatar.vue';
 import SkeletonLoader from '@/components/SkeletonLoader.vue';
-import Post from '@/components/Post.vue';
-import RoundedButton from '@/components/inputs/RoundedButton.vue';
+import Post from '@/components/PostCard.vue';
+
+import { UserAvatar } from '@/components/user';
+import { RoundedButton } from '@/components/common';
 import {
   Tv,
   Book,
@@ -54,12 +56,12 @@ const removePost = (postId) => {
 </script>
 
 <template>
-  <div class='h-full overflow-y-scroll bg-zinc-900 text-slate-50 sm:w-full'>
+  <main>
     <BackNavigationBar
       v-if='!isMyProfil'
       :title='user.pseudo ?? user.username'
     />
-    <div class='flex justify-between bg-zinc-900 border-b border-neutral-600 p-4'>
+    <div class='flex justify-between border-b border-neutral-600 p-4'>
       <div class='flex flex-col gap-4 w-full'>
         <div class='flex justify-between'>
           <div class='flex gap-4 items-end'>
@@ -133,28 +135,21 @@ const removePost = (postId) => {
       </div>
     </div>
 
-    <ul
-      v-if='posts.length > 0'
-      class='flex flex-col divide-y divide-neutral-600 border-b border-neutral-600'
-    >
-      <Post
-          v-for='post of posts'
-          :key='post.id'
-          :id='post.id'
-          :username='user.username'
-          :message='post.message'
-          :createdAt='post.created_at'
-          :displayUserInfo='false'
-          :isLoading='isLoading'
-          :canEdit='isMyProfil'
-          :canDelete='isMyProfil'
-          @destroy="(postId) => removePost(postId)"
+    <ul v-if='posts.length > 0' class='flex flex-col gap-4 p-4 sm:items-center' >
+      <Post v-for='post of posts'
+            :key='post.id'
+            :id='post.id'
+            :username='user.username'
+            :message='post.message'
+            :createdAt='post.created_at'
+            :displayUserInfo='false'
+            :isLoading='isLoading'
+            :withAvatar='false'
+            :canEdit='isMyProfil'
+            :canDelete='isMyProfil'
+            @destroy="(postId) => removePost(postId)"
       />
-
     </ul>
-    <p
-      v-else-if='!isLoading'
-      class='text-white w-full text-center p-4'
-    >No publications :(</p>
-  </div>
+    <p v-else-if='!isLoading' class='text-white w-full text-center p-4'>No publications :(</p>
+  </main>
 </template>

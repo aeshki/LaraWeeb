@@ -1,5 +1,5 @@
 <script setup>
-import UserAvatar from '@/components/User/Avatar.vue';
+import { UserAvatar } from '@/components/user';
 import { Home, Search } from 'lucide-vue-next';
 
 import { useAuthStore } from '@/stores/auth';

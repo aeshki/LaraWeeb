@@ -1,7 +1,6 @@
 <script setup>
-import NoticeForm from '@/components/NoticeForm.vue';
-import TextInput from '@/components/TextInput.vue';
-import Button from '@/components/Button.vue';
+import NoticeForm from '@/components/common/NoticeForm.vue';
+import { DefaultButton, TextInput } from '@/components/common';
 
 import { useAuthStore } from '@/stores/auth';
 import { reactive, ref } from 'vue';
@@ -75,8 +74,8 @@ const submit = () => {
         </div>
 
         <div class='flex flex-col gap-3'>
-            <Button :loading='isLoaded' text='Connexion' />
-            <span class='font-medium text-zinc-800'>Besoin d'un compte ? <RouterLink to='/auth/register'>S'inscrire</RouterLink></span>
+            <DefaultButton :loading='isLoaded' text='Connexion' />
+            <span class='font-medium'>Besoin d'un compte ? <RouterLink to='/auth/register'>S'inscrire</RouterLink></span>
         </div>
     </form>
 </template>

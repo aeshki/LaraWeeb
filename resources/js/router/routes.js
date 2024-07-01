@@ -1,5 +1,3 @@
-import Main from '@/layouts/Main.vue';
-
 export default [
     {
         path: '/app',
@@ -7,7 +5,7 @@ export default [
     },
     {
         path: '/',
-        component: Main,
+        component: () => import('@/layouts/MainLayout.vue'),
         children: [
             {
                 path: '',
@@ -29,7 +27,7 @@ export default [
             },
             {
                 path: 'settings/profile',
-                component: () => import('@/views/UserProfileEdit.vue')
+                component: () => import('@/views/UserSettings.vue')
             }
         ],
         meta: {
@@ -38,15 +36,15 @@ export default [
     },
     {
         path: '/auth',
-        component: () => import('@/layouts/Authenticate.vue'),
+        component: () => import('@/layouts/AuthenticateLayout.vue'),
         children: [
             {
                 path: 'login',
-                component: () => import('@/components/forms/Login.vue')
+                component: () => import('@/components/forms/authenticate/LoginForm.vue')
             },
             {
                 path: 'register',
-                component: () => import('@/components/forms/Register.vue')
+                component: () => import('@/components/forms/authenticate/RegisterForm.vue')
             },
             {
                 path: ':any(.*)',
