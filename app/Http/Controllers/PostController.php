@@ -22,7 +22,7 @@ class PostController extends Controller
     {
         return response()->json([
             'message' => 'Post show.',
-            'post' => $post->load([ 'author', 'comments' ])
+            'post' => $post->load([ 'author', 'comments', 'latestComment' ])
         ]);
     }
 

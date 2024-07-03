@@ -127,10 +127,11 @@ const isMyProfil = computed(() => {
             :displayUserInfo='false'
             :isLoading='loading'
             :withAvatar='false'
+            :lastestComment='post.latest_comment'
             :canEdit='isMyProfil'
             :canDelete='isMyProfil'
             @destroy="(postId) => removePost(postId)"
-      />
+        />
     </ul>
     <p v-else-if='!loading && !error' class='text-white w-full text-center p-4'>Aucune publications :(</p>
   </main>

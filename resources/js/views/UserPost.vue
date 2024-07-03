@@ -64,7 +64,7 @@ const handleDeletedComment = (commentId) => {
                         :avatar='comment.author?.avatar'
                         :pseudo='comment.author.pseudo'
                         :username='comment.author.username'
-                        :message='post.message'
+                        :message='comment.message'
                         :canEdit='comment.author.username === authStore.user.username'
                         :canDelete='(comment.author.username === authStore.user.username) || (post.author.username === authStore.user.username)'
                         @deleted='handleDeletedComment(comment.id)'

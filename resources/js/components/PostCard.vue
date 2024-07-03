@@ -12,6 +12,7 @@ import DialogModal from '@/components/common/modals/DialogModal.vue';
 import { UserAvatar } from '@/components/user';
 import SkeletonLoader from '@/components/SkeletonLoader.vue';
 import { RoundedButton, AreaInput } from '@/components/common';
+import CommentCard from '@/components/CommentCard.vue';
 
 import { Trash2, Pen } from 'lucide-vue-next';
 
@@ -20,6 +21,7 @@ const props = defineProps({
     avatar: String,
     pseudo: String,
     username: String,
+    lastestComment: Object,
     message: {
         type: String,
         required: true
@@ -45,7 +47,7 @@ const props = defineProps({
     canDelete: {
         type: Boolean,
         default: false
-    }
+    },
 });
 
 const emit = defineEmits([ 'destroy' ]);
@@ -122,7 +124,7 @@ const getBaseURL = () => {
             :to='`/@${username}`'
             @click.stop
         />
-        <div class='flex flex-col gap-1 text-white w-full' >
+        <div class='flex flex-col gap-2 text-white w-full' >
             <div class='flex w-full justify-between'>
                 <SkeletonLoader v-if='isLoading' class='w-36 h-3' />
 
@@ -173,13 +175,27 @@ const getBaseURL = () => {
                 <SkeletonLoader class='w-52 h-4' />
             </template>
 
-            <p v-else class='whitespace-pre-line'>{{ message }}</p>
-            <img
-                v-if='image'
-                class='max-h-80 w-fit rounded-xl'
-                :src='`${getBaseURL()}/storage/posts/${image}`'
-                alt='image'
-            />
+            <div v-else class='bg-zinc-700 border border-neutral-500 p-2 rounded-lg '>
+                <p class='whitespace-pre-line'>{{ message }}</p>
+                <img
+                    v-if='image'
+                    class='max-h-80 mt-1 w-fit rounded-xl border border-zinc-500'
+                    :src='`${getBaseURL()}/storage/posts/${image}`'
+                    alt='image'
+                />
+            </div>
+            <div
+                v-if='lastestComment && lastestComment.author?.username !== username'
+                class='bg-zinc-900 border border-neutral-600 p-2 rounded-lg'
+            >
+                <p class='mb-1'>Dernier commentaire</p>
+                <CommentCard
+                    :message='lastestComment.message'
+                    :pseudo='lastestComment.author?.pseudo'
+                    :username='lastestComment.author?.username'
+                    :avatar='lastestComment.author?.avatar'
+                />
+            </div>
         </div>
     </div>
 </template>

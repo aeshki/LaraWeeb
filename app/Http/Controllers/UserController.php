@@ -27,7 +27,7 @@ class UserController extends Controller
     {
         return response()->json([
             'message' => 'Success.',
-            'user' => $user->load('posts')
+            'user' => $user->load('posts.latestComment')
         ]);
     }
 

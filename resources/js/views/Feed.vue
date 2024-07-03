@@ -21,6 +21,7 @@ axios.get('/api/posts')
               :pseudo='post.author.pseudo'
               :username='post.author.username'
               :message='post.message'
-              :createdAt='post.created_at' />
+              :createdAt='post.created_at'
+              :lastestComment='post.latest_comment' />
     </ul>
 </template>
