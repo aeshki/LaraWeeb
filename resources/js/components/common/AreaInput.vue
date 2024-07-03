@@ -47,6 +47,7 @@ const styles = {
 <template>
     <div class='flex flex-col gap-2 text-white'>
         <label
+            v-if='label'
             class='font-semibold uppercase text-sm'
             :class="required && label ? `after:content-['*'] after:ml-1 after:text-red-600` : ''"
             :id='id'

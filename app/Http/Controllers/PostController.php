@@ -5,23 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostRequest;
 use App\Models\Post;
 use App\Http\Requests\UpdatePostRequest;
-use App\Repositories\PostRepository;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
-    private $postRepo;
-
-    public function __construct(PostRepository $postRepo) {
-        $this->postRepo = $postRepo;
-    }
-
     public function index()
     {
         return response()->json([
             'message' => 'Posts index.',
-            'posts' => $this->postRepo
-                ->all()
-                ->load('author')
+            'posts' => Post::all()->load([ 'author', 'latestComment' ])
         ]);
     }
 
@@ -29,16 +22,32 @@ class PostController extends Controller
     {
         return response()->json([
             'message' => 'Post show.',
-            'post' => $post->load('author')
+            'post' => $post->load([ 'author', 'comments' ])
         ]);
     }
 
     public function store(StorePostRequest $req)
     {
+        DB::beginTransaction();
+
         $post = Post::create([
             ...$req->validated(),
             'user_id' => auth()->id()
         ]);
+
+        $image = $req->file('image');
+
+        if ($image) {
+            $path = $post->id.'.'.$image->getClientOriginalExtension();
+
+            $image->storeAs('posts', $path);
+
+            $post->update([
+                'image' => $path
+            ]);
+        }
+
+        DB::commit();
 
         return response()->json([
             'message' => 'Post created succesfully.',
@@ -58,10 +67,17 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
+        if ($post->image) {
+            $path = public_path('storage/posts/').$post->image;
+
+            if (File::exists($path)) {
+                File::delete($path);
+            };
+        };
+
         return response()->json([
             'message'=> 'Post deleted.',
             'post' => $post->delete()
         ]);
     }
-
 }

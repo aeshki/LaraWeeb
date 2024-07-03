@@ -26,7 +26,7 @@ const isHexColor = (hexColor) => {
 };
 
 const hexToRgb = (hex) => {
-  const parts = hex.toLowerCase().match(/([0-9]|[A-F]|[a-f])/g);
+  const parts = hex.match(/([0-9]|[A-F]|[a-f])/g);
 
   if (parts.length !== 6 && parts.length !== 3) {
     throw Error('It is not a hexadecimal value. In hexadecimal must contain 3 or 6 characters from 0 to 9 and A to F.');

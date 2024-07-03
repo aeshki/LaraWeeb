@@ -11,9 +11,9 @@
 @tailwind base;
 
 @layer base {
-    /* *::-webkit-scrollbar {
+    *::-webkit-scrollbar {
         display: none
-    } */
+    }
 
     a {
         @apply text-indigo-600 text-shadow-indigo-300

@@ -11,11 +11,13 @@ axios.get('/api/posts')
 </script>
 
 <template>
-    <ul class='flex flex-col items-center gap-4'>
+    <ul class='flex flex-col items-center gap-4 p-4'>
         <CreatePost class='w-full' />
         <Post v-for='post of posts'
               :key='post.id'
               :id='post.id'
+              :image='post.image'
+              :avatar='post.author?.avatar'
               :pseudo='post.author.pseudo'
               :username='post.author.username'
               :message='post.message'

@@ -1,26 +1,23 @@
 <script setup>
-import { ref, computed, reactive, h } from 'vue';
+import axios from 'axios';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useModal } from '@/stores/modal.js';
+import { useModal } from '@/utils/modal.js';
+import useAxios from '@/utils/useAxios';
 
 const modal = useModal();
-
-const router = useRouter()
+const router = useRouter();
 
 import DialogModal from '@/components/common/modals/DialogModal.vue';
 import { UserAvatar } from '@/components/user';
 import SkeletonLoader from '@/components/SkeletonLoader.vue';
 import { RoundedButton, AreaInput } from '@/components/common';
 
-import {
-    Trash2,
-    Pen
-} from 'lucide-vue-next';
-import axios from 'axios';
-import { MoonStar } from 'lucide-vue-next';
+import { Trash2, Pen } from 'lucide-vue-next';
 
 const props = defineProps({
     id: [String, Number],
+    avatar: String,
     pseudo: String,
     username: String,
     message: {
@@ -40,6 +37,7 @@ const props = defineProps({
         type: Boolean,
         default: true
     },
+    image: String,
     canEdit: {
         type: Boolean,
         default: false
@@ -65,8 +63,11 @@ const handleClick = () => {
 }
 
 const handleDelete = () => {
-    axios.delete(`/api/posts/${props.id}`)
-        .then(() => emit('destroy', props.id));
+    const { onResolve } = useAxios(`/api/posts/${props.id}`, { method: 'DELETE' });
+
+    onResolve(() => {
+        emit('destroy', props.id);
+    });
 }
 
 const showModal = () => {
@@ -84,30 +85,39 @@ const showModal = () => {
             ]
         },
         onSubmit: async (data) => {
-            modal.setErrors([ 'test' ]);
+            const { onResolve } = useAxios(`/api/posts/${props.id}`, {
+                method: 'PATCH',
+                data: { message: data.message }
+            });
 
-            await axios.patch(`/api/posts/${props.id}`, {
-                message: data.message
-            }).then(() => {
-                message.value = data.message;
-                modal.close();
-            }).catch((err) => modal.setErrors({
-                global: err.message
-            }));
+            onResolve(({ error }) => {
+                if (error.value) {
+                    modal.setErrors({ global: error.message });
+                } else {
+                    message.value = data.message;
+                    modal.close();
+                }
+            });
         }
     });
+}
+
+const getBaseURL = () => {
+    return window.location.origin;
 }
 </script>
 
 <template>
     <div
-        class='flex items-start p-4 gap-3 bg-zinc-800 rounded-xl border border-neutral-600 transition-all duration-75 cursor-pointer sm:max-w-screen-sm sm:w-full'
+        class='w-full flex items-start p-4 gap-3 bg-zinc-800 rounded-xl border border-neutral-600 transition-all duration-75 cursor-pointer sm:max-w-screen-sm sm:w-full'
         :class="isSameRoute ? '': 'hover:bg-zinc-950'"
         tabindex='0'
         @click='handleClick'
     >
         <UserAvatar
             v-if='withAvatar'
+            :username='username'
+            :path='avatar'
             :isLoading='isLoading'
             :to='`/@${username}`'
             @click.stop
@@ -164,6 +174,12 @@ const showModal = () => {
             </template>
 
             <p v-else class='whitespace-pre-line'>{{ message }}</p>
+            <img
+                v-if='image'
+                class='max-h-80 w-fit rounded-xl'
+                :src='`${getBaseURL()}/storage/posts/${image}`'
+                alt='image'
+            />
         </div>
     </div>
 </template>

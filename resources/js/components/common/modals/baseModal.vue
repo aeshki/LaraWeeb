@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from 'vue';
 import { X } from 'lucide-vue-next';
 
 const emit = defineEmits([ 'click-outside' ]);

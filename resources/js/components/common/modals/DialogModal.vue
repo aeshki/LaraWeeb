@@ -31,12 +31,12 @@ const emit = defineEmits([ 'submit', 'cancel' ]);
       <template #content>
         <div class='flex flex-col gap-3'>
           <component
-          v-for='(input, idx) of props.inputs'
-          :key='idx'
-          :is="input.type === 'area' ? AreaInput : TextInput"
-          v-bind='input'
-          v-model='data[input.id]'
-        />
+            v-for='(input, idx) of props.inputs'
+            :key='idx'
+            :is="input.type === 'area' ? AreaInput : TextInput"
+            v-bind='input'
+            v-model='data[input.id]'
+          />
         <NoticeForm
           v-if='errors.value.global'
           :message='errors.value.global'

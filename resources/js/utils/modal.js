@@ -7,12 +7,6 @@ export const useModal = () => {
     const modals = document.getElementById('modals');
     let vnode = null;
 
-    const close = () => {
-        render(null, modals);
-        vnode = null;
-        isOpen.value = false;
-    }
-
     const open = ({ component, props, onSubmit }) => {
         vnode = h(component, {
             onClickOutside: () => close(),
@@ -26,8 +20,19 @@ export const useModal = () => {
         isOpen.value = true;
     }
 
+    const close = () => {
+        render(null, modals);
+        vnode = null;
+        $reset();
+    }
+
     const setErrors = (err) => {
         errors.value = err;
+    }
+
+    const $reset = () => {
+        isOpen.value = false;
+        errors.value = {};
     }
 
     return {

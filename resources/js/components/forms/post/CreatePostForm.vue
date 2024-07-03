@@ -2,23 +2,45 @@
 // BUILT-IN
 import axios from 'axios';
 import { reactive } from 'vue';
+import { useAuthStore } from '@/stores/auth';
+
+const authStore = useAuthStore();
 
 // COMPONENTS
-import { RoundedButton, AreaInput } from '@/components/common';
+import { RoundedButton, AreaInput, FileInput } from '@/components/common';
 import { UserAvatar } from '@/components/user';
 
 const form = reactive({
-  message: ''
+  message: '',
+  image: null
 });
 
 const handleSubmit = () => {
-  axios.post('/api/posts', form);
+  let formData = new FormData();
+
+  // formData.set('_method', 'PATCH');
+
+  Object.entries(form).forEach((data) => {
+    data[1] ??= '';
+
+    if (data[0] === 'image' && !(data[1] instanceof File) && data[1]) {
+        return
+    }
+
+    formData.append(data[0], data[1]);
+  });
+
+  axios.post('/api/posts', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
 }
 </script>
 
 <template>
   <div class='flex gap-4 p-4'>
-    <UserAvatar />
+    <UserAvatar :username='authStore.user.username' :path='authStore.user?.avatar' />
     <form
       @submit.prevent='handleSubmit'
       class='flex flex-col gap-4 text-slate-50 w-full'
@@ -32,10 +54,17 @@ const handleSubmit = () => {
         rows='4'
       />
 
-      <RoundedButton
-        class='self-end'
-        text='Envoyer'
-      />
+      <div class='w-full flex justify-end gap-2'>
+        <FileInput
+          id='image'
+          @change='(file) => form.image = file'
+        />
+
+        <RoundedButton
+          class='self-end'
+          text='Envoyer'
+        />
+      </div>
     </form>
   </div>
 </template>

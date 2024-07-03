@@ -1,85 +1,65 @@
 <script setup>
-// BUILT-IN
-import axios from 'axios';
-import { ref, watch, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
-
-// COMPONENTS
 
 import BackNavigationBar from '@/components/BackNavigationBar.vue';
 import SkeletonLoader from '@/components/SkeletonLoader.vue';
 import Post from '@/components/PostCard.vue';
+import useAxios from '@/utils/useAxios';
 
 import { UserAvatar } from '@/components/user';
 import { RoundedButton } from '@/components/common';
-import {
-  Tv,
-  Book,
-  Smartphone,
-  CalendarDays
-} from 'lucide-vue-next';
+import { Tv, Book, Smartphone, CalendarDays } from 'lucide-vue-next';
 
-// STORE
 import { useAuthStore } from '@/stores/auth';
 
-// VAR
 const route = useRoute();
 const authStore = useAuthStore();
-const user = ref({});
 const posts = ref([]);
+const user = ref({});
 
-// TEMP
-const code = ref(null);
-const isLoading = ref(true);
+const { error, loading, onFulfilled } = useAxios(() => `/api/users/${route.params.username}`);
 
-const isMyProfil = computed(() => {
-  return !isLoading.value ? (user.value.username === authStore.user.username) : true;
+onFulfilled((data) => {
+  user.value = data.value.user;
+  posts.value = user.value.posts.reverse();
 });
-
-// LOGIC
-watch(() => route.params.username, (username) => {
-  isLoading.value = true;
-
-  axios.get(`/api/users/${username}`)
-    .then((res) => {
-      user.value = res.data.user;
-      posts.value = res.data.user.posts.reverse();
-      code.value = res.status;
-    })
-    .catch((err) => code.value = err.response.status)
-    .finally(() => isLoading.value = false);
-}, { immediate: true });
 
 const removePost = (postId) => {
   posts.value = posts.value.filter((post) => post.id !== postId);
 }
+
+const isMyProfil = computed(() => {
+  return !loading.value ? (user.value.username === authStore.user.username) : true;
+});
 </script>
 
 <template>
   <main>
-    <BackNavigationBar
-      v-if='!isMyProfil'
-      :title='user.pseudo ?? user.username'
-    />
+    <BackNavigationBar v-if='!isMyProfil' title='Compte' />
     <div class='flex justify-between border-b border-neutral-600 p-4'>
       <div class='flex flex-col gap-4 w-full'>
         <div class='flex justify-between'>
-          <div class='flex gap-4 items-end'>
+          <div class='flex gap-4 w-full'>
             <UserAvatar
-              :isLoading='isLoading'
+              :path='user?.avatar'
+              :username='user?.username'
+              :isLoading='loading'
             />
 
             <div class='flex flex-col h-full justify-center'>
-              <template v-if='isLoading'>
+              <template v-if='loading'>
                 <SkeletonLoader class='w-32 h-4' />
                 <SkeletonLoader class='w-24 h-3 mt-2' />
               </template>
+
+              <p v-else-if='error' class='text-white font-semibold text-lg justify-self-center'>Utilisateur introuvable :/</p>
+              
               <template v-else>
                 <p class='text-white font-semibold text-lg'>{{ user.pseudo ?? user.username }}</p>
                 <p class='text-neutral-400 text-xs'>@{{ user.username }}</p>
               </template>
 
-              <!-- <p v-else class='text-white font-semibold text-lg justify-self-center'>Utilisateur introuvable</p> -->
             </div>
           </div>
 
@@ -92,11 +72,11 @@ const removePost = (postId) => {
 
         <p v-if='user.bio'>{{ user.bio }}</p>
 
-        <template v-if='isLoading'>
+        <template v-if='loading'>
           <SkeletonLoader class='w-48 h-3' />
           <SkeletonLoader class='w-32 h-4 mt-3' />
         </template>
-        <template v-else >
+        <template v-else-if='!error' >
           <div class='flex gap-1 items-center text-neutral-400'>
             <CalendarDays class='w-5 h-5' />
 
@@ -129,7 +109,7 @@ const removePost = (postId) => {
           </div>
 
           <div>
-            <p>{{ posts.length }} <span class='text-neutral-400'>publications</span></p>
+            <p>{{ posts.length }} <span class='text-neutral-400'>Publications</span></p>
           </div>
         </template>
       </div>
@@ -139,17 +119,19 @@ const removePost = (postId) => {
       <Post v-for='post of posts'
             :key='post.id'
             :id='post.id'
+            :image='post.image'
+            :avatar='user?.avatar'
             :username='user.username'
             :message='post.message'
             :createdAt='post.created_at'
             :displayUserInfo='false'
-            :isLoading='isLoading'
+            :isLoading='loading'
             :withAvatar='false'
             :canEdit='isMyProfil'
             :canDelete='isMyProfil'
             @destroy="(postId) => removePost(postId)"
       />
     </ul>
-    <p v-else-if='!isLoading' class='text-white w-full text-center p-4'>No publications :(</p>
+    <p v-else-if='!loading && !error' class='text-white w-full text-center p-4'>Aucune publications :(</p>
   </main>
 </template>

@@ -57,9 +57,33 @@ export const useAuthStore = defineStore('auth', () => {
         });
     }
 
-    async function updateUser(formData) {
-        console.log(formData)
-        return await axios.patch(`/api/users/${user.value.id}`, formData)
+    async function handleDeleteAccount() {
+        return await axios.delete(`/api/users/${user.value.id}`).then(() => {
+            $reset();
+            this.router.push('/auth/login');
+        });
+    }
+
+    async function updateUser(data) {
+        let formData = new FormData();
+
+        formData.set('_method', 'PATCH');
+
+        Object.entries(data).forEach(data => {
+            data[1] ??= '';
+
+            if (data[0] === 'avatar' && !(data[1] instanceof File) && data[1]) {
+                return
+            }
+
+            formData.append(data[0], data[1]);
+        })
+        
+        return await axios.post(`/api/users/${user.value.id}`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
             .then(() => {
                 user.value = { ...user.value, ...formData };
                 this.router.push(`/@${user.value.username}`)
@@ -77,6 +101,7 @@ export const useAuthStore = defineStore('auth', () => {
         handleLogin,
         handleRegister,
         handleLogout,
+        handleDeleteAccount,
         updateUser,
         $reset
     }
