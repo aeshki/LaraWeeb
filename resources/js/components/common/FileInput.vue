@@ -18,12 +18,16 @@ const styles = {
 </script>
 
 <template>
-    <div class='flex flex-col gap-2 text-white'>
-        <input
-            type='file'
-            :id='id'
-            :accept='accept'
-            :multiple='multiple'
-            @change="(e) => emit('change', multiple ? e.target.files : e.target.files[0])" />
+    <div class='flex items-center text-white px-4 py-1 rounded-full w-fit bg-neutral-700'>
+        <label :for='id'>Ajouter une image</label>
+            <input
+                class='text-transparent overflow-hidden w-0'
+                type='file'
+                :name='id'
+                :id='id'
+                :accept='accept'
+                :multiple='multiple'
+                @change="(e) => emit('change', multiple ? e.target.files : e.target.files[0])"
+            />
     </div>
 </template>

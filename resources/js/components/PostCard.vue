@@ -14,7 +14,7 @@ import SkeletonLoader from '@/components/SkeletonLoader.vue';
 import { RoundedButton, AreaInput } from '@/components/common';
 import CommentCard from '@/components/CommentCard.vue';
 
-import { Trash2, Pen } from 'lucide-vue-next';
+import { Trash2, Pen, Heart } from 'lucide-vue-next';
 
 const props = defineProps({
     id: [String, Number],
@@ -40,6 +40,14 @@ const props = defineProps({
         default: true
     },
     image: String,
+    isLiked: {
+        type: Boolean,
+        default: false
+    },
+    likesCount: {
+        type: Number,
+        default: 0
+    },
     canEdit: {
         type: Boolean,
         default: false
@@ -50,13 +58,18 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits([ 'destroy' ]);
+const emit = defineEmits([
+    'like',
+    'unlike',
+    'destroy'
+]);
 
 const message = ref(props.message);
 
-const isSameRoute = router.currentRoute.value.path === `/posts/${props.id}`;
+const isLiked = ref(props.isLiked);
+const likesCount = ref(props.likesCount);
 
-// const haveModification = computed(() => message.value.toLowerCase().replaceAll(' ', '') !== props.message.toLowerCase().replaceAll(' ', ''));
+const isSameRoute = router.currentRoute.value.path === `/posts/${props.id}`;
 
 const handleClick = () => {
     if (!isSameRoute && (window.getSelection().toString().length < 1)) {
@@ -70,6 +83,26 @@ const handleDelete = () => {
     onResolve(() => {
         emit('destroy', props.id);
     });
+}
+
+const toggleLike = () => {
+    if (isLiked.value) {
+        const { onFulfilled } = useAxios(`/api/posts/${props.id}/like`, { method: 'DELETE' });
+
+        onFulfilled(() => {
+            likesCount.value--;
+            isLiked.value = false;
+            emit('unlike');
+        });
+    } else {
+        const { onFulfilled } = useAxios(`/api/posts/${props.id}/like`, { method: 'POST' });
+    
+        onFulfilled(() => {
+            likesCount.value++;
+            isLiked.value = true;
+            emit('like');
+        });
+    }
 }
 
 const showModal = () => {
@@ -183,6 +216,21 @@ const getBaseURL = () => {
                     :src='`${getBaseURL()}/storage/posts/${image}`'
                     alt='image'
                 />
+            </div>
+            <div class='flex justify-end *:h-fit'>
+                <div class='flex gap-1 justify-center font-bold' @click.stop='toggleLike() '>
+                    <Heart
+                        v-if='isLiked'
+                        fill='#ff3d3d'
+                        stroke='#ff3d3d'
+                    />
+                    <Heart
+                        v-else
+                        strokeWidth='1.5'
+                        stroke='#ff3d3d'
+                    />
+                    <span v-if='likesCount'>{{ likesCount }}</span>
+                </div>
             </div>
             <div
                 v-if='lastestComment && lastestComment.author?.username !== username'

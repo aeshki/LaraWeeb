@@ -12,14 +12,18 @@ class PostController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', auth()->user());
+
         return response()->json([
             'message' => 'Posts index.',
-            'posts' => Post::all()->load([ 'author', 'latestComment' ])
+            'posts' => Post::public()->get()->load([ 'author', 'latestComment' ])
         ]);
     }
 
     public function show(Post $post)
     {
+        $this->authorize('view', $post);
+
         return response()->json([
             'message' => 'Post show.',
             'post' => $post->load([ 'author', 'comments', 'latestComment' ])
@@ -51,12 +55,14 @@ class PostController extends Controller
 
         return response()->json([
             'message' => 'Post created succesfully.',
-            'post' => $post
+            'post' => $post->load([ 'author' ])
         ]);
     }
 
     public function update(UpdatePostRequest $request, Post $post)
     {
+        $this->authorize('update', $post);
+
         $post->update($request->validated());
 
         return response()->json([
@@ -67,6 +73,8 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
+        $this->authorize('delete', $post);
+
         if ($post->image) {
             $path = public_path('storage/posts/').$post->image;
 

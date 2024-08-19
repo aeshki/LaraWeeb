@@ -74,6 +74,8 @@ export const useAuthStore = defineStore('auth', () => {
 
             if (data[0] === 'avatar' && !(data[1] instanceof File) && data[1]) {
                 return
+            } else if (typeof data[1] === 'boolean') {
+                data[1] = +data[1]
             }
 
             formData.append(data[0], data[1]);

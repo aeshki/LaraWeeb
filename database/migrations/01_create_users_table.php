@@ -37,6 +37,7 @@ return new class extends Migration
             $table->boolean('active')->default(true);
 
             $table->boolean('is_super_admin')->default(false);
+            $table->boolean('is_private')->default(false);
 
             $table->rememberToken();
             $table->timestamps();

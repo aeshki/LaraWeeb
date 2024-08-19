@@ -31,7 +31,8 @@ class UpdateUserRequest extends FormRequest
             ],
             'favorite_anime' => 'nullable|string',
             'favorite_manga' => 'nullable|string',
-            'favorite_webtoon' => 'nullable|string'
+            'favorite_webtoon' => 'nullable|string',
+            'is_private' => 'nullable|boolean'
         ];
     }
 }

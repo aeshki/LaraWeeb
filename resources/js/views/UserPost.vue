@@ -15,7 +15,7 @@ import PostComment from '@/components/forms/PostComment.vue';
 const post = ref({});
 const comments = ref([]);
 
-const { onFulfilled } = useAxios(() => `/api/posts/${route.params.id}`);
+const { onFulfilled, error, loading } = useAxios(() => `/api/posts/${route.params.id}`);
 
 onFulfilled((data) => {
     post.value = data.value.post;
@@ -34,7 +34,10 @@ const handleDeletedComment = (commentId) => {
 <template>
     <main>
         <BackNavigationBar title='Post' />
-        <div class='flex flex-col p-3 items-center'>
+        <div
+            v-if='!loading && !error'
+            class='flex flex-col p-3 items-center'
+        >
             <Post
                 v-if='post.message'
                 class='border-b border-neutral-600'
@@ -44,9 +47,11 @@ const handleDeletedComment = (commentId) => {
                 :pseudo='post.author?.pseudo'
                 :username='post.author.username'
                 :createdAt='post.created_at'
+                :isLiked='post.is_liked'
+                :likesCount='post.likes_count'
             />
             
-            <div class='flex flex-col sm:max-w-screen-sm sm:w-full'>
+            <div class='flex flex-col sm:max-w-screen-sm w-full'>
                 <h3 class='text-lg font-semibold mb-3 mt-2'>
                     Commentaires <span v-if='comments?.length > 0'>( {{ comments?.length }} )</span>
                 </h3>
@@ -72,6 +77,12 @@ const handleDeletedComment = (commentId) => {
                 </div>
                 <p v-else class='text-slate-50 self-center h-full flex items-center'>Aucun commentaire :(</p>
             </div>
+        </div>
+        <div
+            v-if='!loading && error'
+            class='flex items-center justify-center m-8'
+        >
+            <p>Poste introuvable :/</p>
         </div>
     </main>
 </template>

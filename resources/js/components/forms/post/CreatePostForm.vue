@@ -3,7 +3,9 @@
 import axios from 'axios';
 import { reactive } from 'vue';
 import { useAuthStore } from '@/stores/auth';
+import useAxios from '@/utils/useAxios';
 
+const emit = defineEmits([ 'submit' ]);
 const authStore = useAuthStore();
 
 // COMPONENTS
@@ -15,11 +17,10 @@ const form = reactive({
   image: null
 });
 
+
 const handleSubmit = () => {
   let formData = new FormData();
-
-  // formData.set('_method', 'PATCH');
-
+  
   Object.entries(form).forEach((data) => {
     data[1] ??= '';
 
@@ -30,10 +31,15 @@ const handleSubmit = () => {
     formData.append(data[0], data[1]);
   });
 
-  axios.post('/api/posts', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
+  const { onFulfilled } = useAxios(`/api/posts`, {
+    method: 'POST',
+    data: formData
+  });
+
+  onFulfilled(data => {
+    emit('submit', data.value.post);
+    form.message = '';
+    form.image = '';
   });
 }
 </script>
@@ -54,14 +60,14 @@ const handleSubmit = () => {
         rows='4'
       />
 
-      <div class='w-full flex justify-end gap-2'>
+      <div class='w-full flex-col items-end flex justify-end gap-4 mobileLarge:flex-row mobileLarge:items-center'>
         <FileInput
           id='image'
           @change='(file) => form.image = file'
         />
 
         <RoundedButton
-          class='self-end'
+          class='h-fit'
           text='Envoyer'
         />
       </div>

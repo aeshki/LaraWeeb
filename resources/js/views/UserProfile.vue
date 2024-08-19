@@ -7,9 +7,9 @@ import SkeletonLoader from '@/components/SkeletonLoader.vue';
 import Post from '@/components/PostCard.vue';
 import useAxios from '@/utils/useAxios';
 
-import { UserAvatar } from '@/components/user';
+import { UserAvatar, Badges } from '@/components/user';
 import { RoundedButton } from '@/components/common';
-import { Tv, Book, Smartphone, CalendarDays } from 'lucide-vue-next';
+import { Tv, Book, Smartphone, CalendarDays, ShieldBan } from 'lucide-vue-next';
 
 import { useAuthStore } from '@/stores/auth';
 
@@ -17,17 +17,50 @@ const route = useRoute();
 const authStore = useAuthStore();
 const posts = ref([]);
 const user = ref({});
+const isPrivate = ref(false);
+
+const BadgesDef = {
+    STAFF: 1 << 0,
+    DEVELOPER: 1 << 1,
+    STAR: 1 << 2
+};
+
+const getBadges = (flags) => {
+    return Object.entries(BadgesDef)
+        .filter(([key, value]) => (flags & value) === value)
+        .map(([key]) => key);
+}
 
 const { error, loading, onFulfilled } = useAxios(() => `/api/users/${route.params.username}`);
 
 onFulfilled((data) => {
   user.value = data.value.user;
-  posts.value = user.value.posts.reverse();
+  isPrivate.value = user.value.is_private && authStore.user.id !== user.value.id;
+
+  if (!isPrivate.value) {
+    posts.value = user.value.posts.reverse();
+  }
 });
 
 const removePost = (postId) => {
   posts.value = posts.value.filter((post) => post.id !== postId);
-}
+};
+
+const handleLike = () => {
+  user.value.total_likes++;
+
+  if (!user.value.is_private && user.value.total_likes > 9 && !getBadges(user.value.flags).includes('STAR')) {
+    user.value.flags += 1 << 2;
+  }
+};
+
+const handleUnlike = () => {
+  user.value.total_likes--;
+
+  if (!user.value.is_private && user.value.total_likes < 10 && getBadges(user.value.flags).includes('STAR')) {
+    user.value.flags -= 1 << 2;
+  }
+};
 
 const isMyProfil = computed(() => {
   return !loading.value ? (user.value.username === authStore.user.username) : true;
@@ -58,6 +91,7 @@ const isMyProfil = computed(() => {
               <template v-else>
                 <p class='text-white font-semibold text-lg'>{{ user.pseudo ?? user.username }}</p>
                 <p class='text-neutral-400 text-xs'>@{{ user.username }}</p>
+                <Badges v-if='user.flags' :flags='user.flags' />
               </template>
 
             </div>
@@ -110,6 +144,7 @@ const isMyProfil = computed(() => {
 
           <div>
             <p>{{ posts.length }} <span class='text-neutral-400'>Publications</span></p>
+            <p v-if='!user.is_private'>{{ user.total_likes }} <span class='text-neutral-400'>Likes</span></p>
           </div>
         </template>
       </div>
@@ -130,9 +165,14 @@ const isMyProfil = computed(() => {
             :lastestComment='post.latest_comment'
             :canEdit='isMyProfil'
             :canDelete='isMyProfil'
+            :isLiked='post.is_liked'
+            :likesCount='post.likes_count'
+            @like='handleLike()'
+            @unlike='handleUnlike()'
             @destroy="(postId) => removePost(postId)"
         />
     </ul>
+    <p v-else-if='!loading && !error && isPrivate' class='text-white w-full text-center p-4'>Profil privé 🔒</p>
     <p v-else-if='!loading && !error' class='text-white w-full text-center p-4'>Aucune publications :(</p>
   </main>
 </template>

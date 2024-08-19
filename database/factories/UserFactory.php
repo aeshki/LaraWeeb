@@ -24,6 +24,7 @@ class UserFactory extends Factory
             'pseudo' => fake()->optional()->name(),
             'email' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make(env('DEFAULT_USER_PASSWORD')),
+            'is_private' => fake()->boolean(20),
             'remember_token' => Str::random(10),
         ];
     }

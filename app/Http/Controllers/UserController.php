@@ -17,32 +17,44 @@ class UserController extends Controller
 
     public function index()
     {
+        $this->authorize('viewAny', auth()->user());
+
         return response()->json([
             'message' => 'User index.',
-            'users' => $this->userRepo->all()
+            'users' => User::public()->get()
         ]);
     }
 
     public function show(User $user)
     {
+        $data = $user->is_private && $user->id !== auth()->user()->id
+            ? $user->makeHidden([
+                    'favorite_anime',
+                    'favorite_manga',
+                    'favorite_webtoon'
+                ])
+            :  $user->load('posts.latestComment');
+
         return response()->json([
             'message' => 'Success.',
-            'user' => $user->load('posts.latestComment')
+            'user' => $data
         ]);
     }
 
     public function update(UpdateUserRequest $req, User $user)
     {
+        $this->authorize('update', $user);
+
         $user->fill($req->validated());
 
         $avatar = $req->file('avatar');
 
-        $avatars = glob(public_path('storage/avatars/'.$req->user()->id.'.*'));
-        foreach ($avatars as $avatar_path) {
-            File::delete($avatar_path);
-        }
-
         if ($avatar) {
+            $avatars = glob(public_path('storage/avatars/'.$req->user()->id.'.*'));
+            foreach ($avatars as $avatar_path) {
+                File::delete($avatar_path);
+            }
+            
             $path = $req->user()->id.'.'.$avatar->getClientOriginalExtension();
 
             $avatar->storeAs('avatars', $path);
@@ -62,6 +74,8 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        $this->authorize('delete', $user);
+
         if ($user->avatar) {
             $path = public_path('storage/avatars/').$user->avatar;
 

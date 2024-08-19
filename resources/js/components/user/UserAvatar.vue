@@ -36,7 +36,7 @@ const getBaseURL = () => {
         v-else
         :src='path ? `${getBaseURL()}/storage/avatars/${path}` : `https://api.dicebear.com/9.x/avataaars-neutral/svg?seed=${username}`'
         alt='User Avatar'
-        class='bg-white max-w-12 max-h-12 rounded-full select-none'
+        class='bg-white max-w-12 max-h-12 aspect-square	 rounded-full select-none'
         :class="to ? 'cursor-pointer' : ''"
         @click='handleRedirect'
     />

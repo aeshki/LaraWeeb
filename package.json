@@ -1,14 +1,30 @@
 {
     "private": true,
+    "name": "laraweeb",
+    "version": "0.5.0",
+    "description": "LaraWeeb is an open-source project based on Laravel 11 and Vue3 technologies. It's a template that allows you to easily create a social network with an anime / video game / manga theme.",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/aeshki/LaraWeeb.git"
+    },
+    "author": "aeshki",
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/aeshki/LaraWeeb/issues"
+    },
+    "homepage": "https://github.com/aeshki/LaraWeeb#readme",
     "type": "module",
     "scripts": {
-        "dev": "vite",
+        "dev:vite": "vite",
+        "dev:server": "php artisan serve",
+        "dev": "npm-run-all --parallel dev:server dev:vite",
         "build": "vite build"
     },
     "devDependencies": {
         "autoprefixer": "^10.4.19",
         "axios": "^1.6.4",
         "laravel-vite-plugin": "^1.0",
+        "npm-run-all": "^4.1.5",
         "postcss": "^8.4.38",
         "tailwindcss": "^3.4.3",
         "vite": "^5.0"

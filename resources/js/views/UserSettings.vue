@@ -1,5 +1,5 @@
 <script setup>
-import { RoundedButton, AreaInput, TextInput, FileInput } from '@/components/common';
+import { RoundedButton, AreaInput, TextInput, FileInput, SwitchInput } from '@/components/common';
 
 import { ref, reactive } from 'vue';
 import { useAuthStore } from '@/stores/auth';
@@ -16,7 +16,8 @@ const form = reactive({
   email: authStore.user.email,
   favorite_anime: authStore.user.favorite_anime,
   favorite_manga: authStore.user.favorite_manga,
-  favorite_webtoon: authStore.user.favorite_webtoon
+  favorite_webtoon: authStore.user.favorite_webtoon,
+  is_private: authStore.user.is_private
 });
 
 const handleSubmit = () => {
@@ -34,7 +35,7 @@ const handleFileChanged = (file) => {
 </script>
 
 <template>
-  <div class='p-4'>
+  <div class='flex flex-col gap-4 p-4'>
     <form @submit.prevent='handleSubmit' class='flex flex-col gap-4'>
       <FileInput
         id='avatar'
@@ -98,13 +99,22 @@ const handleFileChanged = (file) => {
         :disabled='isLoaded'
         v-model='form.favorite_webtoon'
       />
+
+      <SwitchInput
+        id='is_private'
+        label='Profil Private'
+        :disabled='isLoaded'
+        v-model='form.is_private'
+      />
       
       <RoundedButton
         text='Sauvegarder'
         :loading='false'
       />
     </form>
-    <RoundedButton text='Logout' @click='() => authStore.handleLogout()' />
+    <div class='flex gap-2'>
+      <RoundedButton text='Logout' @click='() => authStore.handleLogout()' />
       <RoundedButton text='Delete account' @click='() => authStore.handleDeleteAccount()' />
+    </div>
   </div>
 </template>

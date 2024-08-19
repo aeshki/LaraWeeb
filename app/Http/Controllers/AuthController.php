@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 
+use Auth;
 use Illuminate\Http\Request;
 
 use App\Http\Requests\LoginRequest;
@@ -16,7 +17,7 @@ class AuthController extends Controller
         if (!auth()->attempt($req->validated())) {
             return response()->json([
                 'errors' => [
-                    'global' => 'The provided credentials are incorrect.'
+                    'global' => __('auth.failed')
                 ]
             ], 403);
         };

@@ -12,6 +12,8 @@ class CommentController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', auth()->user());
+
         return response()->json([
             'message' => 'Comments index.',
             'posts' => Comment::all()
@@ -20,6 +22,8 @@ class CommentController extends Controller
 
     public function show(Comment $comment)
     {
+        $this->authorize('view', $comment);
+
         return response()->json([
             'message' => 'Comment show.',
             'post' => $comment->load('author')
@@ -47,6 +51,8 @@ class CommentController extends Controller
 
     public function update(UpdateCommentRequest $req, Comment $comment)
     {
+        $this->authorize('update', $comment);
+
         $comment->update($req->validated());
 
         return response()->json([
@@ -57,6 +63,8 @@ class CommentController extends Controller
 
     public function destroy(Comment $comment)
     {
+        $this->authorize('delete', $comment);
+
         return response()->json([
             'message'=> 'Comment deleted.',
             'post' => $comment->delete()
