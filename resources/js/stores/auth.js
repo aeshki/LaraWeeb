@@ -72,7 +72,7 @@ export const useAuthStore = defineStore('auth', () => {
         Object.entries(data).forEach(data => {
             data[1] ??= '';
 
-            if (data[0] === 'avatar' && !(data[1] instanceof File) && data[1]) {
+            if ((data[0] === 'avatar' || data[0] === 'banner') && !(data[1] instanceof File) && data[1]) {
                 return
             } else if (typeof data[1] === 'boolean') {
                 data[1] = +data[1]

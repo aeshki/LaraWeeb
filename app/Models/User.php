@@ -14,6 +14,8 @@ class User extends Authenticatable
 
     protected $fillable = [
         'avatar',
+        'banner',
+        'banner_color',
         'pseudo',
         'username',
         'bio',
@@ -65,7 +67,7 @@ class User extends Authenticatable
 
         $flags = 0;
 
-        if ($this->username == 'shxki') {
+        if ($this->id == 1) {
             $flags |= $Badges['DEVELOPER'];
         }
 

@@ -2,38 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
-use App\Repositories\UserRepository;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
-    private $userRepo;
-
-    public function __construct(UserRepository $userRepository) {
-        $this->userRepo = $userRepository;
-    }
-
-    public function index()
+    public function index(Request $request)
     {
-        $this->authorize('viewAny', auth()->user());
+        $perPage = 50;
+    
+        if ($request->has('username')) {
+            $username = $request->query('username');
 
+            $users = User::where('username', 'like', $username . '%')
+                ->simplePaginate($perPage);
+        } else {
+            $users = User::simplePaginate($perPage);
+        }
+    
         return response()->json([
-            'message' => 'User index.',
-            'users' => User::public()->get()
+            'message' => 'Users index.',
+            'users' => $users
         ]);
     }
 
     public function show(User $user)
     {
-        $data = $user->is_private && $user->id !== auth()->user()->id
+        $data = $user->is_private && $user->id !== Auth::user()->id
             ? $user->makeHidden([
                     'favorite_anime',
                     'favorite_manga',
                     'favorite_webtoon'
                 ])
-            :  $user->load('posts.latestComment');
+            :  $user;
 
         return response()->json([
             'message' => 'Success.',
@@ -64,6 +68,23 @@ class UserController extends Controller
             ]);
         }
 
+        $banner = $req->file('banner');
+
+        if ($banner) {
+            $banners = glob(public_path('storage/banners/'.$req->user()->id.'.*'));
+            foreach ($banners as $banner_path) {
+                File::delete($banner_path);
+            }
+            
+            $path = $req->user()->id.'.'.$banner->getClientOriginalExtension();
+
+            $banner->storeAs('banners', $path);
+
+            $user->fill([
+                'banner' => $path
+            ]);
+        }
+
         $user->save();
 
         return response()->json([
@@ -89,5 +110,4 @@ class UserController extends Controller
             'user' => $user->delete()
         ]);
     }
-
 }

@@ -23,6 +23,17 @@ const authStore = useAuthStore();
         </ul>
         <ul>
             <li>
+                <RouterLink
+                    class='rounded-full p-2 sm:px-4 sm:py-2 group flex gap-2 text-white [&.exact-active]:bg-neutral-500/70 transition-all duration-200'
+                    to='/search'
+                >
+                    <Search />
+                    <p class='hidden tablette:block'>Recherche</p>
+                </RouterLink>
+            </li>
+        </ul>
+        <ul>
+            <li>
                 <UserAvatar
                     class='w-9 h-9 sm:h-full sm:w-full'
                     :path='authStore.user?.avatar'

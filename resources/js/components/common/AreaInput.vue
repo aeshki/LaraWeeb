@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onUpdated, ref } from 'vue';
 
 const props = defineProps({
     'id': String,
@@ -26,6 +26,8 @@ const change = defineModel();
 const input = ref(null);
 
 const adjustHeight = () => {
+    console.log('Called')
+
     if (!props.autoSize) {
         return;
     }
@@ -35,7 +37,7 @@ const adjustHeight = () => {
     input.value.style.height = `${input.value.scrollHeight}px`;
 }
 
-onMounted(() => adjustHeight());
+onUpdated(() => adjustHeight());
 
 const styles = {
   default: 'outline-neutral-600 focus:outline-neutral-500 focus:outline-offset-2 hover:outline-neutral-400',

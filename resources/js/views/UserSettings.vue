@@ -10,6 +10,8 @@ const authStore = useAuthStore();
 const isLoaded = ref(false);
 const form = reactive({
   avatar: authStore.user.avatar,
+  banner: authStore.user.banner,
+  banner_color: authStore.user.banner_color,
   pseudo: authStore.user.pseudo,
   username: authStore.user.username,
   bio: authStore.user.bio,
@@ -27,9 +29,15 @@ const handleSubmit = () => {
     .finally(() => isLoaded.value = false);
 };
 
-const handleFileChanged = (file) => {
+const handleFileAvatarChanged = (file) => {
   if (file) {
     form.avatar = file;
+  }
+}
+
+const handleFileBannerChanged = (file) => {
+  if (file) {
+    form.banner = file;
   }
 }
 </script>
@@ -39,7 +47,12 @@ const handleFileChanged = (file) => {
     <form @submit.prevent='handleSubmit' class='flex flex-col gap-4'>
       <FileInput
         id='avatar'
-        @change='handleFileChanged'
+        @change='handleFileAvatarChanged'
+      />
+
+      <FileInput
+        id='banner'
+        @change='handleFileBannerChanged'
       />
 
       <RoundedButton

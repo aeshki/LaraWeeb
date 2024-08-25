@@ -22,10 +22,7 @@ const props = defineProps({
     pseudo: String,
     username: String,
     lastestComment: Object,
-    message: {
-        type: String,
-        required: true
-    },
+    message: String,
     createdAt: String,
     displayUserInfo: {
         type: Boolean,
@@ -61,7 +58,8 @@ const props = defineProps({
 const emit = defineEmits([
     'like',
     'unlike',
-    'destroy'
+    'destroy',
+    'tagClicked'
 ]);
 
 const message = ref(props.message);
@@ -140,6 +138,41 @@ const showModal = () => {
 const getBaseURL = () => {
     return window.location.origin;
 }
+
+const handleTagClicked = (tag) => {
+    emit('tagClicked', tag);
+}
+
+function parseMessage(message) {
+    const tagRegex = /#(\w+)/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = tagRegex.exec(message)) !== null) {
+        if (match.index > lastIndex) {
+            parts.push({
+                value: message.slice(lastIndex, match.index),
+                isTag: false
+            });
+        }
+
+        parts.push({
+            value: match[0],
+            isTag: true
+        });
+        lastIndex = tagRegex.lastIndex;
+    }
+
+    if (lastIndex < message.length) {
+        parts.push({
+            value: message.slice(lastIndex),
+            isTag: false
+        });
+    }
+
+    return parts;
+}
 </script>
 
 <template>
@@ -209,7 +242,15 @@ const getBaseURL = () => {
             </template>
 
             <div v-else class='bg-zinc-700 border border-neutral-500 p-2 rounded-lg '>
-                <p class='whitespace-pre-line'>{{ message }}</p>
+                <template v-for='(part, idx) in parseMessage(message)' :key='idx'>
+                    <RouterLink
+                        class='text-indigo-300 whitespace-pre-line'
+                        @click.stop='handleTagClicked(part.value)'
+                        v-if='part.isTag'
+                        :to='`/search?tag=${part.value.replace("#", "")}`'
+                    >{{ part.value }}</RouterLink>
+                    <span v-else class='whitespace-pre-line'>{{ part.value }}</span>
+                </template>
                 <img
                     v-if='image'
                     class='max-h-80 mt-1 w-fit rounded-xl border border-zinc-500'
@@ -217,7 +258,7 @@ const getBaseURL = () => {
                     alt='image'
                 />
             </div>
-            <div class='flex justify-end *:h-fit'>
+            <div v-if='!isLoading' class='flex *:h-fit'>
                 <div class='flex gap-1 justify-center font-bold' @click.stop='toggleLike() '>
                     <Heart
                         v-if='isLiked'

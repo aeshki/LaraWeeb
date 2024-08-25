@@ -13,6 +13,10 @@ export default [
                 component: () => import('@/views/Feed.vue')
             },
             {
+                path: 'search',
+                component: () => import('@/views/Search.vue')
+            },
+            {
                 path: '@:username',
                 component: () => import('@/views/UserProfile.vue')
             },

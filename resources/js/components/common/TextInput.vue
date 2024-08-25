@@ -1,12 +1,20 @@
 <script setup>
 defineProps({
-    'id': String,
-    'type': String,
-    'label': String,
-    'placeholder': String,
-    'invalid': Boolean,
-    'required': Boolean,
-    'disabled': Boolean
+    id: String,
+    type: String,
+    label: String,
+    placeholder: String,
+    minlength: {
+        type: [String, Number],
+        default: 2
+    },
+    maxlength: {
+        type: [String, Number],
+        default: 2000
+    },
+    invalid: Boolean,
+    required: Boolean,
+    disabled: Boolean
 });
 
 const change = defineModel();
@@ -32,6 +40,8 @@ const styles = {
             :required='required'
             :disabled='disabled'
             :placeholder='placeholder'
+            :maxlength='maxlength'
+            :minlength='minlength'
             class='bg-transparent outline outline-1 p-2 text-sm rounded-sm transition-all duration-100'
             autocomplete='off'
             v-model='change' 

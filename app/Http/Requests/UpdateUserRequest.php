@@ -16,6 +16,8 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'avatar' => 'nullable|file',
+            'banner' => 'nullable|file',
+            'banner_color' => 'nullable',
             'pseudo' => [
                 'nullable',
                 'string',

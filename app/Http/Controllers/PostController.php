@@ -5,20 +5,42 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostRequest;
 use App\Models\Post;
 use App\Http\Requests\UpdatePostRequest;
+use App\Models\Tag;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $this->authorize('viewAny', auth()->user());
-
+        $perPage = 20;
+        
+        $query = Post::public()->with([ 'author' ]);
+        
+        if ($request->has('tag')) {
+            $tagName = $request->query('tag');
+            
+            $query->whereHas('tags', function ($query) use ($tagName) {
+                $query->where('name', $tagName);
+            });
+        }
+        
+        $query->orderBy('created_at', 'desc');
+        
+        if (!$request->has('tag')) {
+            $query->with([ 'latestComment' ]);
+        }
+        
+        $posts = $query->simplePaginate($perPage);
+        
         return response()->json([
-            'message' => 'Posts index.',
-            'posts' => Post::public()->get()->load([ 'author', 'latestComment' ])
+            'message' => 'Post index.',
+            'posts' => $posts
         ]);
     }
+    
 
     public function show(Post $post)
     {
@@ -34,10 +56,14 @@ class PostController extends Controller
     {
         DB::beginTransaction();
 
+        // DEFAULT POST PROPS
+
         $post = Post::create([
             ...$req->validated(),
-            'user_id' => auth()->id()
+            'user_id' => Auth::id()
         ]);
+
+        // IMAGE ATTACHEMENT
 
         $image = $req->file('image');
 
@@ -49,6 +75,20 @@ class PostController extends Controller
             $post->update([
                 'image' => $path
             ]);
+        }
+
+        // TAGS
+
+        preg_match_all('/#(\w+)/', $req->input('message'), $matches);
+
+        $tags = $matches[1];
+
+        foreach ($tags as $tagName) {
+            $tag = Tag::firstOrCreate([
+                'name' => $tagName
+            ]);
+
+            $post->tags()->attach($tag);
         }
 
         DB::commit();

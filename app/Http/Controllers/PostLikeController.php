@@ -4,14 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\PostLike;
+use Illuminate\Support\Facades\Auth;
 
 class PostLikeController extends Controller
 {
     public function like(Post $post)
     {   
-        $this->authorize('update', auth()->user());
+        $this->authorize('update', Auth::user());
 
-        $userId = auth()->id();
+        $userId = Auth::id();
 
         if ($post->is_liked) {
             return response()->json([
@@ -31,9 +32,9 @@ class PostLikeController extends Controller
 
     public function unlike(Post $post)
     {
-        $this->authorize('delete', auth()->user());
+        $this->authorize('delete', Auth::user());
 
-        $like = $post->likes()->where('user_id', auth()->id())->first();
+        $like = $post->likes()->where('user_id', Auth::id())->first();
 
         if (!$like) {
             return response()->json([

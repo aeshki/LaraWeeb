@@ -5,6 +5,9 @@ export default {
   ],
   theme: {
     extend: {
+      aspectRatio: {
+        '3/1': '3 / 1'
+      },
       screens: {
         'mobileSmall': '320px',
         'mobile': '375px',

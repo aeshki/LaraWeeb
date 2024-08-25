@@ -19,7 +19,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            // 'avatar' => null,
+            'banner_color' => str_replace('#', '', fake()->hexColor()),
             'username' => fake()->userName(),
             'pseudo' => fake()->optional()->name(),
             'email' => fake()->unique()->safeEmail(),
