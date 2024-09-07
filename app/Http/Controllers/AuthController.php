@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 
+use Auth;
 use Illuminate\Http\JsonResponse;
 
 use App\Http\Requests\LoginRequest;
@@ -40,6 +41,8 @@ class AuthController extends Controller
 
     public function logout()
     {
-        //
+        Auth::logout();
+
+        return redirect("login");
     }
 }
