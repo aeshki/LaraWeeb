@@ -10,29 +10,59 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+
             $table->string('avatar')->nullable();
+            $table->string('banner')->nullable();
+
+            $table->string('banner_color');
+
             $table->string('pseudo')->nullable();
+
             $table->string('username')->unique();
+
+            $table->string('bio')->nullable();
+
+            $table->string('favorite_anime')->nullable();
+            $table->string('favorite_manga')->nullable();
+            $table->string('favorite_webtoon')->nullable();
+
             $table->string('email')->unique();
+
             $table->string('password');
-            $table->timestamp('email_verified_at')->nullable()->default(now());
+
+            $table->timestamp('email_verified_at')
+                ->nullable()
+                ->default(now());
+
+
+            $table->boolean('active')->default(true);
+
             $table->boolean('is_super_admin')->default(false);
+            $table->boolean('is_private')->default(false);
+
             $table->rememberToken();
             $table->timestamps();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
+
             $table->string('token');
+
             $table->timestamp('created_at')->nullable();
         });
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
+
             $table->foreignId('user_id')->nullable()->index();
+
             $table->string('ip_address', 45)->nullable();
+
             $table->text('user_agent')->nullable();
+
             $table->longText('payload');
+
             $table->integer('last_activity')->index();
         });
     }

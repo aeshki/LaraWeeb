@@ -14,7 +14,8 @@ class StorePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'message' => 'required|string|between:2,2000',
+            'image' => 'nullable|file'
         ];
     }
 }

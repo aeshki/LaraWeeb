@@ -19,11 +19,12 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            // 'avatar' => null,
+            'banner_color' => str_replace('#', '', fake()->hexColor()),
             'username' => fake()->userName(),
             'pseudo' => fake()->optional()->name(),
             'email' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make(env('DEFAULT_USER_PASSWORD')),
+            'is_private' => fake()->boolean(20),
             'remember_token' => Str::random(10),
         ];
     }

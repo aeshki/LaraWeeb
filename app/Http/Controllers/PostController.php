@@ -2,54 +2,130 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostRequest;
 use App\Models\Post;
 use App\Http\Requests\UpdatePostRequest;
-use App\Repositories\PostRepository;
+use App\Models\Tag;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
-    private $postRepo;
-
-    public function __construct(PostRepository $postRepo) {
-        $this->postRepo = $postRepo;
-    }
-
-    public function index()
+    public function index(Request $request)
     {
+        $perPage = 20;
+        
+        $query = Post::public()->with([ 'author' ]);
+        
+        if ($request->has('tag')) {
+            $tagName = $request->query('tag');
+            
+            $query->whereHas('tags', function ($query) use ($tagName) {
+                $query->where('name', $tagName);
+            });
+        }
+        
+        $query->orderBy('created_at', 'desc');
+        
+        if (!$request->has('tag')) {
+            $query->with([ 'latestComment' ]);
+        }
+        
+        $posts = $query->simplePaginate($perPage);
+        
         return response()->json([
-            'ok' => true,
-            'message' => 'Posts index.',
-            'data' => $this->postRepo->all()
+            'message' => 'Post index.',
+            'posts' => $posts
         ]);
     }
+    
 
     public function show(Post $post)
     {
+        $this->authorize('view', $post);
+
         return response()->json([
-            'ok' => true,
             'message' => 'Post show.',
-            'data' => $post
+            'post' => $post->load([ 'author', 'comments', 'latestComment' ])
+        ]);
+    }
+
+    public function store(StorePostRequest $req)
+    {
+        DB::beginTransaction();
+
+        // DEFAULT POST PROPS
+
+        $post = Post::create([
+            ...$req->validated(),
+            'user_id' => Auth::id()
+        ]);
+
+        // IMAGE ATTACHEMENT
+
+        $image = $req->file('image');
+
+        if ($image) {
+            $path = $post->id.'.'.$image->getClientOriginalExtension();
+
+            $image->storeAs('posts', $path);
+
+            $post->update([
+                'image' => $path
+            ]);
+        }
+
+        // TAGS
+
+        preg_match_all('/#(\w+)/', $req->input('message'), $matches);
+
+        $tags = $matches[1];
+
+        foreach ($tags as $tagName) {
+            $tag = Tag::firstOrCreate([
+                'name' => $tagName
+            ]);
+
+            $post->tags()->attach($tag);
+        }
+
+        DB::commit();
+
+        return response()->json([
+            'message' => 'Post created succesfully.',
+            'post' => $post->load([ 'author' ])
         ]);
     }
 
     public function update(UpdatePostRequest $request, Post $post)
     {
+        $this->authorize('update', $post);
+
         $post->update($request->validated());
 
         return response()->json([
-            'ok' => true,
             'message'=> 'Post updated.',
-            'data' => $post
+            'post' => $post
         ], 201);
     }
 
     public function destroy(Post $post)
     {
+        $this->authorize('delete', $post);
+
+        if ($post->image) {
+            $path = public_path('storage/posts/').$post->image;
+
+            if (File::exists($path)) {
+                File::delete($path);
+            };
+        };
+
         return response()->json([
-            'ok' => true,
             'message'=> 'Post deleted.',
-            'data' => $post->delete()
+            'post' => $post->delete()
         ]);
     }
-
 }
