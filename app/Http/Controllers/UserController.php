@@ -104,6 +104,14 @@ class UserController extends Controller
                 File::delete($path);
             };
         };
+        
+        if ($user->banner) {
+            $path = public_path('storage/banners/').$user->banner;
+
+            if (File::exists($path)) {
+                File::delete($path);
+            };
+        };
 
         return response()->json([
             'message'=> 'User deleted.',

@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->string('banner')->nullable();
 
-            $table->string('banner_color');
+            $table->string('banner_color')->default('#FFF');
 
             $table->string('pseudo')->nullable();
 

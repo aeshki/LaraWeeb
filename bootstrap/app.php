@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
      
-            Route::middleware('auth')
+            Route::middleware('web')
                 ->prefix('auth')
                 ->group(base_path('routes/auth.php'));
      
@@ -23,10 +23,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->statefulApi();
 
-        $middleware->group('auth', [
-            Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        ]);
+        // $middleware->group('auth', [
+        //     Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        //     \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        // ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
