@@ -4,17 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 
-use Auth;
 use Illuminate\Http\Request;
 
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 
+use Illuminate\Support\Facades\Auth;
+
 class AuthController extends Controller
 {
     public function login(LoginRequest $req)
     {
-        if (!auth()->attempt($req->validated())) {
+        if (!Auth::attempt($req->validated())) {
             return response()->json([
                 'errors' => [
                     'global' => __('auth.failed')
@@ -25,9 +26,8 @@ class AuthController extends Controller
         $req->session()->regenerate();
 
         return response()->json([
-            'ok' => true,
             'message' => 'Login Successfully.',
-            'user' => auth()->user()
+            'user' => Auth::user()
         ]);
     }
 
@@ -35,10 +35,9 @@ class AuthController extends Controller
     {
         $user = User::create($req->safe()->all());
         
-        auth()->login($user);
+        Auth::login($user);
 
         return response()->json([
-            'ok' => true,
             'message' => 'Account created.',
             'user' => $user
         ]);
@@ -47,7 +46,6 @@ class AuthController extends Controller
     public function logout(Request $req)
     { 
         $req->session()->invalidate();
-     
         $req->session()->regenerateToken();
 
         return response()->json([

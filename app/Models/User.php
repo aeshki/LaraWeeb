@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\UserBadges;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -51,6 +53,15 @@ class User extends Authenticatable
         ];
     }
 
+    public function resolveRouteBinding($value, $field = null)
+    {
+        if (is_numeric($value)) {
+            return $this->where('id', $value)->firstOrFail();
+        } else {
+            return $value === '@me' ? Auth::user()->makeVisible([ 'email' ]) : $this->where('username', $value)->firstOrFail();
+        }
+    }
+
     protected function getTotalLikesAttribute()
     {
         return $this->posts()->withCount('likes')->get()->sum('likes_count');
@@ -58,29 +69,14 @@ class User extends Authenticatable
 
     protected function getFlagsAttribute()
     {
-        $Badges = [
-            'STAFF' => 1 << 0,
-            'DEVELOPER' => 1 << 1,
-            'STAR' => 1 << 2,
-            'PRIVATE' => 1 << 3,
-        ];
-
         $flags = 0;
 
         if ($this->id == 1) {
-            $flags |= $Badges['DEVELOPER'];
+            $flags |= UserBadges::DEVELOPER->value;
         }
 
         if ($this->is_super_admin) {
-            $flags |= $Badges['STAFF'];
-        }
-    
-        if ($this->getTotalLikesAttribute() > 9 && !$this->is_private) {
-            $flags |= $Badges['STAR'];
-        }
-
-        if ($this->is_private) {
-            $flags |= $Badges['PRIVATE'];
+            $flags |= UserBadges::STAFF->value;
         }
 
         return $flags;
@@ -89,11 +85,6 @@ class User extends Authenticatable
     public function scopePublic(Builder $query): void
     {
         $query->where('is_private', false);
-    }
-
-    public function resolveRouteBinding($value, $field = null)
-    {
-        return is_numeric($value) ? $this->where('id', $value)->firstOrFail() :  $this->where('username', $value)->firstOrFail();
     }
 
     public function likes()

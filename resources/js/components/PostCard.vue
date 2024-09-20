@@ -164,7 +164,7 @@ function parseMessage(message) {
         lastIndex = tagRegex.lastIndex;
     }
 
-    if (lastIndex < message.length) {
+    if (lastIndex < message?.length) {
         parts.push({
             value: message.slice(lastIndex),
             isTag: false
@@ -177,7 +177,7 @@ function parseMessage(message) {
 
 <template>
     <div
-        class='w-full flex items-start p-4 gap-3 bg-zinc-800 rounded-xl border border-neutral-600 transition-all duration-75 cursor-pointer sm:max-w-screen-sm sm:w-full'
+        class='max-w-full w-full flex items-start p-4 gap-3 bg-zinc-800 rounded-xl border border-neutral-600 transition-all duration-75 cursor-pointer sm:max-w-screen-sm sm:w-full'
         :class="isSameRoute ? '': 'hover:bg-zinc-950'"
         tabindex='0'
         @click='handleClick'
@@ -190,13 +190,13 @@ function parseMessage(message) {
             :to='`/@${username}`'
             @click.stop
         />
-        <div class='flex flex-col gap-2 text-white w-full' >
+        <div class='flex flex-col gap-2 text-white w-full overflow-hidden' >
             <div class='flex w-full justify-between'>
                 <SkeletonLoader v-if='isLoading' class='w-36 h-3' />
 
                 <template v-else>
-                    <div class='flex gap-1 items-center'>
-                        <template v-if='displayUserInfo'>
+                    <div class='flex flex-col'>
+                        <div v-if='displayUserInfo' class='flex items-center gap-1'>
                             <div class='flex gap-1 items-center'>
                                 <RouterLink class='text-white'
                                             :to='`/@${username}`'
@@ -204,19 +204,20 @@ function parseMessage(message) {
                                 >{{ pseudo ?? username }}</RouterLink>
                             </div>
 
-                            <span
-                                class='text-xs text-neutral-400'
-                            >@{{ username }} · </span>
-                        </template>
-
-                        <span class='text-xs text-neutral-400'>
+                            <span class='text-xs text-neutral-400'>
                             {{
                                 new Date(createdAt).toLocaleDateString('default', {
                                     month: 'long',
                                     day: 'numeric',
+                                    hour: 'numeric',
+                                    minute: 'numeric'
                                 })
                             }}
                         </span>
+                        </div>
+                        <span
+                                class='text-xs text-neutral-400'
+                            >@{{ username }}</span>
                     </div>
 
                     <div v-if='(canEdit || canDelete)'
@@ -241,15 +242,20 @@ function parseMessage(message) {
                 <SkeletonLoader class='w-52 h-4' />
             </template>
 
-            <div v-else class='bg-zinc-700 border border-neutral-500 p-2 rounded-lg '>
-                <template v-for='(part, idx) in parseMessage(message)' :key='idx'>
-                    <RouterLink
-                        class='text-indigo-300 whitespace-pre-line'
-                        @click.stop='handleTagClicked(part.value)'
-                        v-if='part.isTag'
-                        :to='`/search?tag=${part.value.replace("#", "")}`'
-                    >{{ part.value }}</RouterLink>
-                    <span v-else class='whitespace-pre-line'>{{ part.value }}</span>
+            <div v-else class='bg-zinc-700 border border-neutral-500 p-2 rounded-lg'>
+                <template v-if='message'>
+                    <template
+                        v-for='(part, idx) in parseMessage(message)'
+                        :key='idx'
+                    >
+                        <RouterLink
+                            class='text-indigo-300 whitespace-pre-wrap'
+                            @click.stop='handleTagClicked(part.value)'
+                            v-if='part.isTag'
+                            :to='`/search?tag=${part.value.replace("#", "")}`'
+                        >{{ part.value }}</RouterLink>
+                        <p v-else class='break-words'>{{ part.value }}</p>
+                    </template>
                 </template>
                 <img
                     v-if='image'

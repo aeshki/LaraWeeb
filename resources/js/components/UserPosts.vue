@@ -12,6 +12,6 @@ const props = defineProps({
 
 <template>
     <div>
-        <p>POSTS</p> 
+        <p>Bientôt disponible ⚙</p> 
     </div>
 </template>

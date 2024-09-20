@@ -5,6 +5,11 @@
 
     RewriteEngine On
 
+    # Redirect to HTTPS and remove www
+    RewriteCond %{HTTPS} off [OR]
+    RewriteCond %{HTTP_HOST} ^www\.
+    RewriteRule ^(.*)$ https://focus-leveling.fr/$1 [R=301,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthUser;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostLikeController;
 use App\Http\Controllers\UserController;
@@ -19,8 +20,4 @@ Route::middleware('auth:sanctum')->group(function() {
     
     Route::post('posts/{post}/like', [PostLikeController::class, 'like']);
     Route::delete('posts/{post}/like', [PostLikeController::class, 'unlike']);    
-
-    Route::get('/user', function (Request $request) {
-        return auth()->user()->makeVisible(['email']);
-    });
 });

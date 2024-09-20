@@ -15,8 +15,8 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'avatar' => 'nullable|file',
-            'banner' => 'nullable|file',
+            'avatar' => 'nullable|file|max:8192',
+            'banner' => 'nullable|file|max:8192',
             'banner_color' => 'nullable',
             'pseudo' => [
                 'nullable',

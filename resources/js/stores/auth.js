@@ -14,13 +14,13 @@ export const useAuthStore = defineStore('auth', () => {
             return false;
         }
 
-        const rep = await axios.get('/api/user')
+        const rep = await axios.get('/api/users/@me')
             .catch((err) => err.response);
         
         const isOK = rep.status === 200;
 
         if (isOK) {
-            user.value = rep.data;
+            user.value = rep.data.user;
         } else {
             $reset();
         }
@@ -81,11 +81,7 @@ export const useAuthStore = defineStore('auth', () => {
             formData.append(data[0], data[1]);
         })
         
-        return await axios.post(`/api/users/${user.value.id}`, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          })
+        return await axios.post(`/api/users/@me`, formData)
             .then(() => {
                 user.value = { ...user.value, ...formData };
                 this.router.push(`/@${user.value.username}`)

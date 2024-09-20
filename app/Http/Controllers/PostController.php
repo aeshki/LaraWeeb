@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Helpers\ImageManager;
 use App\Http\Requests\StorePostRequest;
 use App\Models\Post;
 use App\Http\Requests\UpdatePostRequest;
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
+    use ImageManager;
+
     public function index(Request $request)
     {
         $perPage = 20;
@@ -63,20 +66,6 @@ class PostController extends Controller
             'user_id' => Auth::id()
         ]);
 
-        // IMAGE ATTACHEMENT
-
-        $image = $req->file('image');
-
-        if ($image) {
-            $path = $post->id.'.'.$image->getClientOriginalExtension();
-
-            $image->storeAs('posts', $path);
-
-            $post->update([
-                'image' => $path
-            ]);
-        }
-
         // TAGS
 
         preg_match_all('/#(\w+)/', $req->input('message'), $matches);
@@ -89,6 +78,13 @@ class PostController extends Controller
             ]);
 
             $post->tags()->attach($tag);
+        }
+
+        $imageFile = $req->file('image');
+
+        if ($imageFile) {
+            $post->image = $this->saveImage($imageFile, $post->id, 'posts', false);
+            $post->save();
         }
 
         DB::commit();

@@ -8,7 +8,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <div>
-        <p>LIKES</p>
+    <div class='flex justify-center items-center'>
+        <p>Bientôt disponible ⚙</p>
     </div>
 </template>

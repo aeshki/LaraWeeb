@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Helpers\ImageManager;
 use App\Models\User;
 use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
+    use ImageManager;
+
     public function index(Request $request)
     {
         $perPage = 50;
@@ -51,38 +55,16 @@ class UserController extends Controller
 
         $user->fill($req->validated());
 
-        $avatar = $req->file('avatar');
+        $avatarFile = $req->file('avatar');
 
-        if ($avatar) {
-            $avatars = glob(public_path('storage/avatars/'.$req->user()->id.'.*'));
-            foreach ($avatars as $avatar_path) {
-                File::delete($avatar_path);
-            }
-            
-            $path = $req->user()->id.'.'.$avatar->getClientOriginalExtension();
-
-            $avatar->storeAs('avatars', $path);
-
-            $user->fill([
-                'avatar' => $path
-            ]);
+        if ($avatarFile) {
+            $user->avatar = $this->saveImage($avatarFile, $req->user()->id, 'avatars');
         }
 
-        $banner = $req->file('banner');
+        $bannerFile = $req->file('banner');
 
-        if ($banner) {
-            $banners = glob(public_path('storage/banners/'.$req->user()->id.'.*'));
-            foreach ($banners as $banner_path) {
-                File::delete($banner_path);
-            }
-            
-            $path = $req->user()->id.'.'.$banner->getClientOriginalExtension();
-
-            $banner->storeAs('banners', $path);
-
-            $user->fill([
-                'banner' => $path
-            ]);
+        if ($bannerFile) {
+            $user->banner = $this->saveImage($bannerFile, $req->user()->id, 'banners');
         }
 
         $user->save();
@@ -98,11 +80,11 @@ class UserController extends Controller
         $this->authorize('delete', $user);
 
         if ($user->avatar) {
-            $path = public_path('storage/avatars/').$user->avatar;
+            $this->removeImage("avatars/".$user->avatar);
+        };
 
-            if (File::exists($path)) {
-                File::delete($path);
-            };
+        if ($user->banner) {
+            $this->removeImage("avatars/".$user->banner);
         };
         
         if ($user->banner) {

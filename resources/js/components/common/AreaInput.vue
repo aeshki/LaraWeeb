@@ -26,8 +26,6 @@ const change = defineModel();
 const input = ref(null);
 
 const adjustHeight = () => {
-    console.log('Called')
-
     if (!props.autoSize) {
         return;
     }

@@ -5,12 +5,14 @@ import SkeletonLoader from '@/components/SkeletonLoader.vue';
 
 const props = defineProps({
     path: String,
+    absolutePath: String,
     to: String,
     username: String,
     isLoading: {
         type: Boolean,
         default: false,
-    }
+    },
+    size: Number
 });
 
 const router = useRouter();
@@ -19,10 +21,6 @@ const handleRedirect = () => {
     if (props.to) {
         router.push(props.to);
     }
-}
-
-const getBaseURL = () => {
-    return window.location.origin;
 }
 </script>
 
@@ -34,10 +32,11 @@ const getBaseURL = () => {
     />
     <img
         v-else
-        :src='path ? `${getBaseURL()}/storage/avatars/${path}` : `https://api.dicebear.com/9.x/avataaars-neutral/svg?seed=${username}`'
+        :src='absolutePath ? absolutePath : path ? `/storage/avatars/${path}` : `https://api.dicebear.com/9.x/avataaars-neutral/svg?seed=${username}`'
         alt='User Avatar'
-        class='bg-white max-w-12 max-h-12 aspect-square	 rounded-full select-none'
+        class='bg-white max-h-fit max-w-fit w-12 h-12 aspect-square rounded-full select-none'
         :class="to ? 'cursor-pointer' : ''"
+        :style='{ width: `${size}px`, height: `${size}px` }'
         @click='handleRedirect'
     />
 </template>
