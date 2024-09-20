@@ -55,7 +55,7 @@ const handleSubmit = () => {
         id='message'
         type='text'
         placeholder='Dite quelque chose..'
-        required
+        :required='!form.image'
         v-model='form.message'
         rows='4'
       />
@@ -63,7 +63,8 @@ const handleSubmit = () => {
       <div class='w-full flex-col items-end flex justify-end gap-4 mobileLarge:flex-row mobileLarge:items-center'>
         <FileInput
           id='image'
-          @change='(file) => form.image = file'
+          label='Attacher une image'
+          v-model='form.image'
         />
 
         <RoundedButton

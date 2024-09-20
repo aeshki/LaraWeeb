@@ -6,7 +6,7 @@ import useScrollBottom from '@/utils/useScrollBottom';
 import { ref, watch } from 'vue';
 import useAxiosPaginate from '@/utils/useAxiosPaginate';
 
-const page = ref(0);
+const page = ref(1);
 const posts = ref([]);
 
 const scrollElement = ref(null);

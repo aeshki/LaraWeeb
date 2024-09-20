@@ -35,7 +35,6 @@ const authStore = useAuthStore();
         <ul>
             <li>
                 <UserAvatar
-                    class='w-9 h-9 sm:h-full sm:w-full'
                     :path='authStore.user?.avatar'
                     :username='authStore.user.username'
                     :to='`/@${authStore.user.username}`'
