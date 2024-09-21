@@ -3,34 +3,40 @@ import axios from 'axios';
 
 export default function useAxios(url, config = []) {
     const data = ref(null);
-    const error = ref(null);
+    const errors = ref([]);
     const loading = ref(false);
 
-    watchEffect(() => {
+    const fetchRequest = () => {
         loading.value = true;
-        
+        errors.value = [];
+
         axios.request({ url: toValue(url), ...config })
             .then((res) => data.value = res.data)
-            .catch((err) => error.value = err)
+            .catch((err) => errors.value = err.response.data.errors ? err.response.data.errors : err)
             .finally(() => loading.value = false);
-    });
+    }
 
     const onResolve = (callback) => {
-        watch(loading, () => !loading.value && callback({ data, error }));
+        watch(loading, () => !loading.value && callback({ data, errors }));
     }
 
     const onFulfilled  = (callback) => {
-        watch(loading, () => (!loading.value && !error.value) && callback(data));
+        watch(loading, () => (!loading.value && errors.value.length < 1) && callback(data));
     }
 
     const onRejected = (callback) => {
-        watch(loading, () => (!loading.value && error.value) && callback(error));
+        watch(loading, () => (!loading.value && errors.value.length > 1) && callback(error));
+    }
+
+    if (!config.deferred) {
+        watchEffect(() => fetchRequest());
     }
 
     return {
         data,
-        error,
+        errors,
         loading,
+        fetchRequest,
         onResolve,
         onFulfilled,
         onRejected

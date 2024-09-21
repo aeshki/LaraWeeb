@@ -15,6 +15,11 @@ const props = defineProps({
         type: String,
         default: 'slate-50',
     },
+    active: {
+      type: Boolean,
+      defautlt: true
+    },
+    size: Number
 });
 
 const { type, bgColor, shimmerColor } = toRefs(props);
@@ -62,10 +67,15 @@ const shimmerStyle = computed(() => {
 </script>
 
 <template>
-  <div :class="[type === 'circle' ? 'rounded-full' : 'rounded', bgColor, 'relative overflow-hidden']">
+  <div
+    v-if='active'
+    :class="[type === 'circle' ? 'aspect-square overflow-hidden rounded-full' : 'rounded', bgColor, 'relative overflow-hidden']"
+    :style='{ width: `${size}px`, height: `${size}px` }'
+  >
     <div
       :style='shimmerStyle'
       class='animate-shimmer -translate-x-full absolute top-0 right-0 bottom-0 left-0'
     ></div>
   </div>
+  <slot v-else />
 </template>

@@ -28,26 +28,8 @@ export const useAuthStore = defineStore('auth', () => {
         return isOK;
     }
 
-    async function handleLogin(formData) {
-        await getCSRFToken();
-
-        return await axios.post('/auth/login', formData)
-            .then((rep) => {
-                user.value = rep.data.user;
-                this.router.push('/');
-            })
-            .catch((err) => err.response?.data);
-    }
-
-    async function handleRegister(formData) {
-        await getCSRFToken();
-
-        return await axios.post('/auth/register', formData)
-            .then((rep) => {
-                user.value = rep.data.user;
-                this.router.push('/');
-            })
-            .catch((err) => err.response?.data);
+    async function setUser(data) {
+        user.value = data;
     }
 
     async function handleLogout() {
@@ -96,11 +78,10 @@ export const useAuthStore = defineStore('auth', () => {
         user,
         getCSRFToken,
         isAuthenticate,
-        handleLogin,
-        handleRegister,
+        setUser,
         handleLogout,
         handleDeleteAccount,
         updateUser,
         $reset
     }
-});
+}, { persist: true });
