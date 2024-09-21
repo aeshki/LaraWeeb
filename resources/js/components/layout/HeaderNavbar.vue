@@ -1,29 +1,21 @@
+<script setup>
+import { ArrowLeft } from 'lucide-vue-next';
+
+defineProps({
+    title: String
+});
+</script>
+
 <template>
-    <div class='flex justify-between '>
-        <NavButton
-            to='/agenda'
-            :icon='EventNoteIcon'
+    <div class='z-10 flex items-center gap-2 font-semibold text-white px-2 py-3 border-b border-neutral-600'>
+        <ArrowLeft
+            size='28'
+            class='cursor-pointer'
+            @click='$router.go(-1)'
         />
-        <NavButton
-            to='/quests'
-            :icon='LibraryBooksIcon'
-        />
-        <NavButton
-            to='/catalog'
-            :icon='MenuBookIcon'
-        />
-        <NavButton
-            to='/users/@admin'
-            :icon='SettingsIcon'
-        />
+        <span
+            v-if='title'
+            class='text-xl'
+        >{{ title }}</span>
     </div>
 </template>
-<script setup>
-import {
-    EventNoteIcon,
-    LibraryBooksIcon,
-    MenuBookIcon,
-    SettingsIcon
-} from '@/components/icons'
-import NavButton from '@/components/common/buttons/NavButton.vue';
-</script>

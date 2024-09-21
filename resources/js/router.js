@@ -4,7 +4,7 @@ import {
     FeedPage,
     // SearchPage,
     // UserPostPage,
-    // UserProfilePage,
+    UserProfilePage,
     // UserSettingsPage,
     NotFoundPage,
 } from '@/pages';
@@ -23,10 +23,10 @@ const routes = [
                 path: 'search',
                 component: FeedPage
             },
-            // {
-            //     path: '@:username',
-            //     component: UserProfilePage
-            // },
+            {
+                path: '@:username',
+                component: UserProfilePage
+            },
             // {
             //     path: 'posts/:id',
             //     component: UserPostPage

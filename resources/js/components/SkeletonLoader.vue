@@ -17,7 +17,7 @@ const props = defineProps({
     },
     active: {
       type: Boolean,
-      defautlt: true
+      default: true
     },
     size: Number
 });
@@ -69,13 +69,12 @@ const shimmerStyle = computed(() => {
 <template>
   <div
     v-if='active'
-    :class="[type === 'circle' ? 'aspect-square overflow-hidden rounded-full' : 'rounded', bgColor, 'relative overflow-hidden']"
-    :style='{ width: `${size}px`, height: `${size}px` }'
+    :class="[type === 'circle' ? 'aspect-square overflow-hidden rounded-full' : 'rounded', bgColor, 'overflow-hidden']"
   >
     <div
       :style='shimmerStyle'
       class='animate-shimmer -translate-x-full absolute top-0 right-0 bottom-0 left-0'
     ></div>
   </div>
-  <slot v-else />
+  <slot v-else-if='$slots.default' />
 </template>

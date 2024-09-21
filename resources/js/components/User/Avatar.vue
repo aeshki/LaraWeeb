@@ -9,8 +9,7 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    size: Number,
-    class: String
+    size: Number
 });
 </script>
 
@@ -18,14 +17,14 @@ const props = defineProps({
     <SkeletonLoader
         type='circle'
         :active='skeleton'
-        :size='size ?? 48'
+        :style='{ width: `${size}px`, height: `${size}px` }'
     >
         <img
             :src='absolutePath ? absolutePath : path ? `/storage/avatars/${path}` : `https://api.dicebear.com/9.x/avataaars-neutral/svg?seed=${username}`'
             alt='User Avatar'
-            class='bg-white max-h-fit max-w-fit w-12 h-12 aspect-square rounded-full select-none'
-            :class='class'
+            class='max-h-fit max-w-fit w-12 h-12 aspect-square rounded-full select-none'
             :style='{ width: `${size}px`, height: `${size}px` }'
+            :class='$attrs.class'
             @click='handleRedirect'
         />
     </SkeletonLoader>
