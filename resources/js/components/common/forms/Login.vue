@@ -32,7 +32,7 @@ onFulfilled((data) => {
 <template>
     <BaseForm
         class='form-authenticate'
-        @submit.prevent="fetchRequest"
+        @submit.prevent="() => fetchRequest()"
     >
         <template #header>
             <hgroup>

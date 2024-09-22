@@ -79,8 +79,6 @@ export const useAuthStore = defineStore('auth', () => {
         getCSRFToken,
         isAuthenticate,
         setUser,
-        handleLogout,
-        handleDeleteAccount,
         updateUser,
         $reset
     }

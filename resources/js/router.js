@@ -2,10 +2,10 @@ import { createWebHistory, createRouter } from 'vue-router'
 
 import {
     FeedPage,
-    // SearchPage,
-    // UserPostPage,
+    SearchPage,
+    UserPostPage,
     UserProfilePage,
-    // UserSettingsPage,
+    UserSettingsPage,
     NotFoundPage,
 } from '@/pages';
 
@@ -21,20 +21,24 @@ const routes = [
             },
             {
                 path: 'search',
-                component: FeedPage
+                component: SearchPage
             },
             {
                 path: '@:username',
                 component: UserProfilePage
             },
-            // {
-            //     path: 'posts/:id',
-            //     component: UserPostPage
-            // },
-            // {
-            //     path: 'settings',
-            //     component: UserSettingsPage
-            // }
+            {
+                path: 'posts',
+                redirect: '/'
+            },
+            {
+                path: 'posts/:id',
+                component: UserPostPage
+            },
+            {
+                path: 'settings',
+                component: UserSettingsPage
+            }
         ],
         meta: {
             requiresAuth: true

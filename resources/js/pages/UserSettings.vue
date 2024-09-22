@@ -1,13 +1,28 @@
-<!-- <script setup>
-import { RoundedButton, AreaInput, TextInput, FileInput, SwitchInput } from '@/components/common';
-import { ref, reactive, watch } from 'vue';
+<script setup>
+import { reactive, ref, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
-import UserAvatar from '../components/user/UserAvatar.vue';
-import UserBanner from '../components/user/UserBanner.vue';
+import useAxios from '@/utils/useAxios';
+import { useRouter } from 'vue-router';
 
+import HeaderNav from '@/components/layout/HeaderNavbar.vue';
+
+import {
+  AreaInput,
+  RoundedButton,
+  DefaultButton,
+  TextInput,
+  FileInput,
+  SwitchInput
+} from '@/components/common';
+
+import {
+  UserAvatar,
+  UserBanner
+} from '@/components/User';
+
+const router = useRouter();
 const authStore = useAuthStore();
 
-const isLoaded = ref(false);
 const form = reactive({
   avatar: authStore.user.avatar,
   banner: authStore.user.banner,
@@ -37,12 +52,6 @@ watch(() => form.banner, (banner) => {
   }
 });
 
-const handleSubmit = () => {
-  isLoaded.value = true;
-  authStore.updateUser(form)
-    .finally(() => isLoaded.value = false);
-};
-
 const previewImage = (file, ref) => {
   const reader = new FileReader();
 
@@ -70,74 +79,163 @@ const handleRemoveBanner = () => {
     form.banner = form.banner ? null : authStore.user.banner;
   }
 };
+
+const { loading, errors, fetchRequest, onFulfilled } = useAxios('/api/users/@me', {
+        method: 'POST',
+        deferred: true
+    });
+
+const handleSubmit = () => {
+  let formData = new FormData();
+
+  formData.set('_method', 'PATCH');
+
+  Object.entries(form).forEach(data => {
+      data[1] ??= '';
+
+      if ((data[0] === 'avatar' || data[0] === 'banner') && !(data[1] instanceof File) && data[1]) {
+          return
+      } else if (typeof data[1] === 'boolean') {
+          data[1] = +data[1]
+      }
+
+      formData.append(data[0], data[1]);
+  });
+
+  fetchRequest(formData);
+}
+
+onFulfilled((data) => router.push(`/@${data.value.user.username}`));
 </script>
 
 <template>
-  <div class='flex flex-col gap-4 p-4'>
-    <form @submit.prevent='handleSubmit' class='flex flex-col gap-4'>
-      <div class='flex flex-col gap-3'>
-        <label class='font-semibold uppercase text-sm'>Bannière</label>
+  <div>
+    <HeaderNav title='Éditer le profil' class='sticky top-0 backdrop-blur-lg bg-zinc-900/80' />  
+    <div class='flex flex-col gap-4 p-4'>
+      <form @submit.prevent='handleSubmit' class='flex flex-col gap-4'>
+        <div class='flex flex-col gap-3'>
+          <label class='font-semibold uppercase text-sm'>Bannière</label>
 
-        <UserBanner
-          :banner='form.banner === authStore.user.banner ? form.banner : null'
-          :absoluteBannerPath='bannerPreview'
-          :bannerColor='form.banner_color'
-        />
-
-        <div class='flex flex-col mobileLarge:flex-row mobileLarge:items-center gap-2'>
-          <FileInput
-            id='banner'
-            :label='form.banner ? "Changer de bannière" : "Ajouter une bannière"'
-            v-model='form.banner'
-          />
-
-          <RoundedButton
-            :text="bannerPreview ? `Revenir à la bannière de base` : form.banner === authStore.user.banner ? `Supprimer la bannière` : 'Remettre la bannière'"
-            @click.prevent='handleRemoveBanner'
-          />
-        </div>
-      </div>
-
-      <div class='flex flex-col gap-3'>
-        <label class='font-semibold uppercase text-sm'>Avatar</label>
-
-        <div class='flex gap-3'>
-          <UserAvatar
-            :size='64'
-            :path='form.avatar === authStore.user.avatar ? form.avatar : null'
-            :absolutePath='avatarPreview'
-            :username='form.username'
+          <UserBanner
+            :path='form.banner === authStore.user.banner ? form.banner : null'
+            :absolutePath='bannerPreview'
+            :color='form.banner_color'
           />
 
           <div class='flex flex-col mobileLarge:flex-row mobileLarge:items-center gap-2'>
             <FileInput
-              id='avatar'
-              :label="form.avatar ? `Changer d'avatar` : 'Ajouter un avatar'"
-              v-model='form.avatar'
+              id='banner'
+              :label='form.banner ? "Changer de bannière" : "Ajouter une bannière"'
+              :error='errors?.banner?.[0]'
+              v-model='form.banner'
             />
 
             <RoundedButton
-              :text="avatarPreview ? `Revenir à l'avatar de base` : form.avatar === authStore.user.avatar ? `Supprimer l'avatar` : `Remettre l'avatar`"
-              @click.prevent='handleRemoveAvatar'
+              v-if='bannerPreview || authStore.user.banner !== null'
+              :text="bannerPreview ? `Revenir à la bannière de base` : form.banner === authStore.user.banner ? `Supprimer la bannière` : 'Remettre la bannière'"
+              @click.prevent='handleRemoveBanner'
             />
           </div>
         </div>
-      </div>
 
-      <TextInput id='pseudo' label='Pseudo' :disabled='isLoaded' v-model='form.pseudo' />
-      <TextInput id='username' label='Username' :disabled='isLoaded' required v-model='form.username' />
-      <AreaInput id='Bio' label='Bio' :disabled='isLoaded' v-model='form.bio' />
-      <TextInput id='email' type='email' label='E-Mail' :disabled='isLoaded' required v-model='form.email' />
-      <TextInput id='favorite_anime' label='Favorite anime' :disabled='isLoaded' v-model='form.favorite_anime' />
-      <TextInput id='favorite_manga' label='Favorite manga' :disabled='isLoaded' v-model='form.favorite_manga' />
-      <TextInput id='favorite_webtoon' label='Favorite webtoon' :disabled='isLoaded' v-model='form.favorite_webtoon' />
-      <SwitchInput id='is_private' label='Profil Private' :disabled='isLoaded' v-model='form.is_private' />
+        <div class='flex flex-col gap-3'>
+          <label class='font-semibold uppercase text-sm'>Avatar</label>
+
+          <div class='flex gap-3'>
+            <UserAvatar
+              :size='64'
+              :path='form.avatar === authStore.user.avatar ? form.avatar : null'
+              :absolutePath='avatarPreview'
+              :username='form.username'
+            />
+
+            <div class='flex flex-col mobileLarge:flex-row mobileLarge:items-center gap-2'>
+              <FileInput
+                id='avatar'
+                :label="form.avatar ? `Changer d'avatar` : 'Ajouter un avatar'"
+                :error='errors?.avatar?.[0]'
+                v-model='form.avatar'
+              />
+
+              <RoundedButton
+                v-if='avatarPreview || authStore.user.avatar !== null'
+                :text="avatarPreview ? `Revenir à l'avatar de base` : form.avatar === authStore.user.avatar ? `Supprimer l'avatar` : `Remettre l'avatar`"
+                @click.prevent='handleRemoveAvatar'
+              />
+            </div>
+          </div>
+        </div>
+
+        <TextInput
+          id='pseudo'
+          label="Nom d'affichage"
+          :disabled='loading'
+          :error='errors?.pseudo?.[0]'
+          v-model='form.pseudo'
+        />
+        
+        <TextInput
+          id='username'
+          label="Nom d'utilisateur"
+          :disabled='loading'
+          required
+          :error='errors?.username?.[0]'
+          v-model='form.username'
+        />
       
-      <RoundedButton text='Sauvegarder' :loading='isLoaded' />
-    </form>
-    <div class='flex gap-2'>
-      <RoundedButton text='Logout' @click='() => authStore.handleLogout()' />
-      <RoundedButton text='Delete account' @click='() => authStore.handleDeleteAccount()' />
+        <AreaInput
+          id='Bio'
+          label='Bio'
+          :disabled='loading'
+          :error='errors?.bio?.[0]'
+          v-model='form.bio'
+        />
+      
+        <TextInput
+          id='email'
+          type='email'
+          label='E-Mail'
+          :disabled='loading'
+          :error='errors?.email?.[0]'
+          required
+          v-model='form.email'
+        />
+        
+        <TextInput
+          id='favorite_anime'
+          label='Anime favoris'
+          :disabled='loading'
+          v-model='form.favorite_anime'
+        />
+      
+        <TextInput
+          id='favorite_manga'
+          label='Manga favoris'
+          :disabled='loading'
+          v-model='form.favorite_manga'
+        />
+        
+        <TextInput
+          id='favorite_webtoon'
+          label='Webtoon favoris'
+          :disabled='loading'
+          v-model='form.favorite_webtoon'
+        />
+
+        <SwitchInput
+          id='is_private'
+          label='Profil privé'
+          :disabled='loading'
+          v-model='form.is_private'
+        />
+        
+        <DefaultButton text='Sauvegarder' :loading='loading' />
+      </form>
+
+      <div class='flex gap-2'>
+        <!-- <RoundedButton text='Logout' @click='() => authStore.handleLogout()' /> -->
+        <!-- <RoundedButton text='Delete account' @click='() => authStore.handleDeleteAccount()' /> -->
+      </div>
     </div>
   </div>
-</template> -->
+</template>

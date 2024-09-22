@@ -14,7 +14,14 @@ import {
   UserLikes
 } from '@/components/User'
 
-import { CalendarDays, Smartphone, Book, Tv } from 'lucide-vue-next';
+import {
+  Lock,
+  CalendarDays,
+  Smartphone,
+  Book,
+  Tv
+} from 'lucide-vue-next';
+
 import RoundedButton from '@/components/common/buttons/RoundedButton.vue';
 import SkeletonLoader from '@/components/SkeletonLoader.vue';
 
@@ -24,31 +31,46 @@ const authStore = useAuthStore();
 const user = ref({});
 const current_tab = shallowRef(UserPosts);
 
-const { error, loading, onFulfilled } = useAxios(() => `/api/users/${route.params.username}`)
+const { loading, onFulfilled } = useAxios(() => `/api/users/${route.params.username}`)
 
-onFulfilled((res) => user.value = res.value.user);
+onFulfilled((res) => {
+  user.value = res.value.user
+  totalLikes.value = user.value.total_likes;
+});
+
+const totalLikes = ref(0);
 
 const canEditProfile = computed(() => {
   return loading.value ? true : (user.value.username === authStore.user.username);
 });
+
+const handlePostLiked = (postId) => {
+  totalLikes.value++;
+};
+
+const handlePostUnliked = (postId) => {
+  totalLikes.value--;
+};
 </script>
 
 <template>
   <main>
-    <HeaderNav title='Compte' class='sticky top-0 backdrop-blur-lg bg-zinc-900/80' />  
+    <HeaderNav :title='!loading && canEditProfile ? "Mon profil" : user.is_private ? "Compte privé" : "Compte"' class='sticky top-0 backdrop-blur-lg bg-zinc-900/80' />  
     <!-- AVATAR | BANNER -->
-    <div class='sm:border sm:border-t-0 sm:broder-zinc-700'>
+    <div>
       <div class='relative mb-11 sm:mb-16'>
         <UserBanner
+          :path='user.banner'
           :color='user.banner_color'
           :skeleton='loading'
           class='relative'
         />
         
         <UserAvatar
+          :path='user.avatar'
           :username='user.username'
           :skeleton='loading'
-          class='absolute -bottom-9 left-8 w-20 h-20'
+          class='absolute -bottom-10 left-8 w-24 h-24 sm:w-36 sm:h-36 sm:-bottom-16'
         />
         
         <RoundedButton
@@ -68,7 +90,13 @@ const canEditProfile = computed(() => {
           <SkeletonLoader class='relative w-28 h-3 mt-2' />
         </template> 
         <template v-else>
-          <span class='font-bold text-xl'>{{ user.pseudo ?? user.username }}</span>
+          <div class='flex gap-1 items-center'>
+            <span class='font-bold text-xl'>{{ user.pseudo ?? user.username }}</span>
+            <Lock
+              v-if='user.is_private'
+              size='20'
+            />
+          </div>
           <span class='text-zinc-400 w-fit text-sm'>@{{ user.username }}</span>
           <p class='mt-2'>{{ user.bio }}</p>
           <UserBadges
@@ -106,12 +134,12 @@ const canEditProfile = computed(() => {
       <!-- STATS -->
       <div class='mt-1'>
         <p v-if='!loading'>
-          <span class='text-neutral-200 font-bold text-base'>{{ user.total_likes }}</span> Likes
+          <span class='text-neutral-200 font-bold text-base'>{{ totalLikes }}</span> Likes
         </p>
       </div>
     </div>
     <!-- TABS -->
-    <template v-if='!loading && !user.is_private || canEditProfile'>
+    <template v-if='!loading && (!user.is_private || canEditProfile)'>
       <div class='flex *:w-full *:text-center *:py-3 *:border-b *:text-neutral-400 has-[:checked]:*:text-neutral-100 has-[:checked]:*:border-b-white *:border-b-zinc-700'>
         <label>
           <input
@@ -139,10 +167,14 @@ const canEditProfile = computed(() => {
       </div>
 
       <KeepAlive class='p-4 h-full'>
-        <component :is='current_tab' />
+        <component
+          :is='current_tab'
+          @postLiked='handlePostLiked'
+          @postUnliked='handlePostUnliked'
+        />
       </KeepAlive>
     </template>
-    <template v-else>
+    <template v-else-if='!loading'>
       <p>Ce profil est privé</p>
     </template>
   </main>

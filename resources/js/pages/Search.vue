@@ -1,4 +1,4 @@
-<!-- <script setup>
+<script setup>
 const stringToTag = (query, withHastag = true) => {
     if (Array.isArray(query)) {
         query = query[0];
@@ -11,19 +11,20 @@ const stringToTag = (query, withHastag = true) => {
     return (withHastag ? '#' : '') + query.split(/ +/).join('');
 };
 
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import useAxios from '@/utils/useAxios';
 
-import { TextInput, DefaultButton } from '../components/common';
-import PostCard from '../components/PostCard.vue';
-import SearchUserCard from '../components/SearchUserCard.vue';
+import { TextInput, DefaultButton } from '@/components/common';
+import PostCard from '@/components/PostCard.vue';
+import SearchUserCard from '@/components/SearchUserCard.vue';
 
 const route = useRoute();
 const router = useRouter();
 
 const data = ref([]);
 const search = ref('');
+
 const query = reactive({
     type: null,
     value: ''
@@ -97,22 +98,22 @@ const postTagClicked = (tag) => {
         <TextInput
             minlength='2'
             v-model='search'
-            @keydown.enter='handleClick'
+        />
+        <DefaultButton
+            text='Rechercher'
+            @click='handleClick'
         />
         <template v-if='query.type === "tag"'>
             <PostCard
                 v-for='post in data.data'
                 :key='post.id'
-                :avatar='post.author?.avatar'
-                :pseudo='post.author.pseudo'
-                :username='post.author.username'
-                :createdAt='post.created_at'
-                :isLiked='post.is_liked'
-                :likesCount='post.likes_count'
-                @tagClicked='(tag) => postTagClicked(tag)'
+                :created-at='post.created_at'
+                :initial-message='post.message'
+                :initial-likes-count='post.likes_count'
+                :initial-liked-state='post.is_liked'
                 v-bind='post'
             />
-            <p v-if='query.value.length > 0 && data.data.length < 1'>Aucun Tag trouvé</p>
+            <p v-if='query.value?.length > 0 && data.data?.length < 1'>Aucun Tag trouvé</p>
         </template>
         <template v-else-if='query.type === "user"'>
             <SearchUserCard
@@ -124,4 +125,4 @@ const postTagClicked = (tag) => {
             <p v-if='query.value?.length > 0 && data.data?.length < 1'>Aucun Utilisateur trouvé</p>
         </template>
     </ul>
-</template> -->
+</template>

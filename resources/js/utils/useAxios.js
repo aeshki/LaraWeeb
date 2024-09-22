@@ -5,14 +5,19 @@ export default function useAxios(url, config = []) {
     const data = ref(null);
     const errors = ref([]);
     const loading = ref(false);
+    
+    const isNotFound = ref(false);
 
-    const fetchRequest = () => {
+    const fetchRequest = (newData) => {
         loading.value = true;
         errors.value = [];
 
-        axios.request({ url: toValue(url), ...config })
+        axios.request({ url: toValue(url), ...{ ...config, data: newData ?? config?.data } })
             .then((res) => data.value = res.data)
-            .catch((err) => errors.value = err.response.data.errors ? err.response.data.errors : err)
+            .catch((err) => {
+                errors.value = err.response.data.errors ? err.response.data.errors : err
+                isNotFound.value = err.response.status === 404;
+            })
             .finally(() => loading.value = false);
     }
 
@@ -36,6 +41,7 @@ export default function useAxios(url, config = []) {
         data,
         errors,
         loading,
+        isNotFound,
         fetchRequest,
         onResolve,
         onFulfilled,

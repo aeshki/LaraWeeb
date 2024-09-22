@@ -24,7 +24,7 @@ export const BADGE_LABELS = {
     STAR: 'Une Star !'
 };
 
-const bitwiseToBadgeKeys = (bitwise) => {
+export const bitwiseToBadgeKeys = (bitwise) => {
     return Object.entries(BADGE_FLAGS)
         .filter(([ _, flag ]) => (bitwise & flag) === flag)
         .map(([ key ]) => key);
@@ -45,4 +45,8 @@ export const bitwiseToBadges = (bitwise) => {
             label: BADGE_LABELS[flag]
         })
     );
+}
+
+export const haveFlag = (flags, flag) => {
+    return bitwiseToBadgeKeys(flags).includes(flag);
 }

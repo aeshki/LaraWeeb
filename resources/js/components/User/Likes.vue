@@ -1,5 +1,5 @@
 <template>
     <div>
-        <p>LIKES</p>
+        <p>Bientôt dispo</p>
     </div>
 </template>

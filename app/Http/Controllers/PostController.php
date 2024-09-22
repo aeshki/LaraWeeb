@@ -17,10 +17,8 @@ class PostController extends Controller
     use ImageManager;
 
     public function index(Request $request)
-    {
-        $perPage = 20;
-        
-        $query = Post::public()->with([ 'author' ]);
+    {        
+        $query = Post::public()->with('author:id,avatar,pseudo,username');
         
         if ($request->has('tag')) {
             $tagName = $request->query('tag');
@@ -30,16 +28,12 @@ class PostController extends Controller
             });
         }
         
-        $query->orderBy('created_at', 'desc');
+        $query->orderByDesc('created_at');
         
-        if (!$request->has('tag')) {
-            $query->with([ 'latestComment' ]);
-        }
-        
-        $posts = $query->simplePaginate($perPage);
+        $posts = $query->simplePaginate(25);
         
         return response()->json([
-            'message' => 'Post index.',
+            'message' => 'Posts.',
             'posts' => $posts
         ]);
     }
@@ -51,7 +45,7 @@ class PostController extends Controller
 
         return response()->json([
             'message' => 'Post show.',
-            'post' => $post->load([ 'author', 'comments', 'latestComment' ])
+            'post' => $post->load('author:id,avatar,pseudo,username')
         ]);
     }
 

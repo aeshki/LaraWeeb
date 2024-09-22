@@ -1,63 +1,55 @@
 <script setup>
-// import Post from '@/components/PostCard.vue';
-// import CreatePost from '@/components/forms/post/CreatePostForm.vue';
-// import useScrollBottom from '@/utils/useScrollBottom';
+import { ref, watch } from 'vue';
+import useAxiosPaginate from '@/utils/useAxiosPaginate';
+import useScrollBottom from '@/utils/useScrollBottom';
 
-// import { ref, watch } from 'vue';
-// import useAxiosPaginate from '@/utils/useAxiosPaginate';
+import CreatePostForm from '@/components/common/forms/CreatePostForm.vue';
+import PostCard from '@/components/PostCard.vue';
 
-// const page = ref(1);
-// const posts = ref([]);
+const scrollElement = ref(null);
+const { bottomReached } = useScrollBottom(scrollElement);
 
-// const scrollElement = ref(null);
-// const { bottomReached } = useScrollBottom(scrollElement);
+const page = ref(1);
+const posts = ref([]);
 
-// const { onFulfilled, loading, per_page, to } = useAxiosPaginate(() => `/api/posts?page=${page.value}`);
+const { onFulfilled, loading, per_page, to } = useAxiosPaginate(() => `/api/posts?page=${page.value}`);
 
-// onFulfilled((data) => {
-//     posts.value = [ ...posts.value, ...data.value ];
-// });
+onFulfilled((data) => {
+    posts.value = [ ...posts.value, ...data.value ];
+});
 
-// watch(bottomReached, (state) => {
-//     if ((state && !loading.value) && to.value % per_page.value === 0) {
-//         page.value = page.value + 1;
-//     }
-// });
+watch(bottomReached, (state) => {
+    if ((state && !loading.value) && to.value % per_page.value === 0) {
+        page.value = page.value + 1;
+    }
+});
 
-// const handleAddPost = (post) => {
-//     posts.value.unshift(post);
-// };
+const handlePostCreated = (post) => {
+    posts.value.unshift(post);
+};
+
+const handlePostDeleted = (postId) => {
+    posts.value = posts.value.filter((post) => post.id !== postId);
+};
 </script>
 
 <template>
-    <div>
-        <p>FEED</p>
-    </div>
-    <!-- <ul ref='scrollElement' class='flex flex-col items-center gap-4 p-4 overflow-y-scroll'> -->
-        <!-- <CreatePost
-            class='w-full'
-            @submit='(post) => handleAddPost(post)'
-        />
-        <Post
+    <ul ref='scrollElement' class='flex flex-col p-4 gap-4 max-w-screen-sm'>
+        <CreatePostForm @submit='handlePostCreated' />
+        <PostCard
             v-for='post of posts'
             :key='post.id'
-            :avatar='post.author?.avatar'
-            :pseudo='post.author.pseudo'
-            :username='post.author.username'
-            :createdAt='post.created_at'
-            :lastestComment='post?.latest_comment'
-            :isLiked='post.is_liked'
-            :likesCount='post.likes_count'
+            :created-at='post.created_at'
+            :latest_comment='post.latest_comment'
+            :initial-message='post.message'
+            :initial-likes-count='post.likes_count'
+            :initial-liked-state='post.is_liked'
+            @deleted='handlePostDeleted'
             v-bind='post'
         />
-        <template v-if='loading'>
-            <Post :isLoading='loading' />
-            <Post :isLoading='loading' />
-            <Post :isLoading='loading' />
-        </template>
         <p 
             v-if='to % per_page !== 0'
-            class='my-4'
-        >On dirait bien que tu as plus aucun poste à voir :o</p>
-    </ul> -->
+            class='my-4 text-center'
+        >On dirait bien que tu as plus aucun poste à voir :O</p>
+    </ul>
 </template>

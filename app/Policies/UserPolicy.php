@@ -7,6 +7,15 @@ use Illuminate\Auth\Access\Response;
 
 class UserPolicy
 {
+    public function before(User $user): bool|null
+    {
+        if ($user->is_super_admin) {
+            return true;
+        }
+     
+        return null;
+    }
+
     public function viewAny(User $user)
     {
         return $user->is_super_admin
