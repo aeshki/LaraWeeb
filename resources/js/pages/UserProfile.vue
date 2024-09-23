@@ -70,6 +70,7 @@ const handlePostUnliked = (postId) => {
           :path='user.avatar'
           :username='user.username'
           :skeleton='loading'
+          :gif-static='false'
           class='absolute -bottom-10 left-8 w-24 h-24 sm:w-36 sm:h-36 sm:-bottom-16'
         />
         

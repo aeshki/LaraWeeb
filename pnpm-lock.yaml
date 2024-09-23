@@ -33,6 +33,9 @@ importers:
       axios:
         specifier: ^1.6.4
         version: 1.7.2
+      laravel-echo:
+        specifier: ^1.16.1
+        version: 1.16.1
       laravel-vite-plugin:
         specifier: ^1.0
         version: 1.0.4(vite@5.2.12)
@@ -42,6 +45,9 @@ importers:
       postcss:
         specifier: ^8.4.38
         version: 8.4.38
+      pusher-js:
+        specifier: 8.4.0-rc2
+        version: 8.4.0-rc2
       tailwindcss:
         specifier: ^3.4.3
         version: 3.4.3
@@ -805,6 +811,10 @@ packages:
   json-parse-better-errors@1.0.2:
     resolution: {integrity: sha512-mrqyZKfX5EhL7hvqcV6WG1yYjnjeuYDzDhhcAAUrq8Po85NBQBJP+ZDUT75qZQ98IkUoBqdkExkukOU7Ts2wrw==}
 
+  laravel-echo@1.16.1:
+    resolution: {integrity: sha512-++Ylb6M3ariC9Rk5WE5gZjj6wcEV5kvLF8b+geJ5/rRIfdoOA+eG6b9qJPrarMD9rY28Apx+l3eelIrCc2skVg==}
+    engines: {node: '>=10'}
+
   laravel-vite-plugin@1.0.4:
     resolution: {integrity: sha512-dEj8Q/Fsn0kKbOQ55bl/NmyJL+dD6OxnVaM/nNByw5XV4b00ky6FzXKVuHLDr4BvSJKH1y6oaOcEG5wKpCZ5+A==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -1032,6 +1042,9 @@ packages:
   proxy-from-env@1.1.0:
     resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
 
+  pusher-js@8.4.0-rc2:
+    resolution: {integrity: sha512-d87GjOEEl9QgO5BWmViSqW0LOzPvybvX6WA9zLUstNdB57jVJuR27zHkRnrav2a3+zAMlHbP2Og8wug+rG8T+g==}
+
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
@@ -1199,6 +1212,9 @@ packages:
 
   ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
+
+  tweetnacl@1.0.3:
+    resolution: {integrity: sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==}
 
   typed-array-buffer@1.0.2:
     resolution: {integrity: sha512-gEymJYKZtKXzzBzM4jqa9w6Q1Jjm7x2d+sh19AdsD4wqnMPDYyvwpsIc2Q/835kHuo3BEQ7CjelGhfTsoBb2MQ==}
@@ -2068,6 +2084,8 @@ snapshots:
 
   json-parse-better-errors@1.0.2: {}
 
+  laravel-echo@1.16.1: {}
+
   laravel-vite-plugin@1.0.4(vite@5.2.12):
     dependencies:
       picocolors: 1.0.1
@@ -2254,6 +2272,10 @@ snapshots:
       source-map-js: 1.2.0
 
   proxy-from-env@1.1.0: {}
+
+  pusher-js@8.4.0-rc2:
+    dependencies:
+      tweetnacl: 1.0.3
 
   queue-microtask@1.2.3: {}
 
@@ -2488,6 +2510,8 @@ snapshots:
       is-number: 7.0.0
 
   ts-interface-checker@0.1.13: {}
+
+  tweetnacl@1.0.3: {}
 
   typed-array-buffer@1.0.2:
     dependencies:

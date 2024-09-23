@@ -18,6 +18,10 @@
     a {
         @apply text-indigo-600 text-shadow-indigo-300
     }
+ 
+    input[type='color']::-webkit-color-swatch-wrapper {
+        padding: 0;
+    }
 }
 
 @tailwind components;

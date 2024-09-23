@@ -12,13 +12,23 @@ trait ImageManager
         if ($clear) {
             self::clearImage("$path/$fileName");
         }
-
-        $fileName = "$fileName.".$file->getClientOriginalExtension();
+    
+        $gifFileName = "$fileName." . $file->getClientOriginalExtension();
         
-        $file->storeAs("public/$path", $fileName);
-
-        return $fileName;
+        $file->storeAs("public/$path", $gifFileName);
+    
+        if ($file->getClientOriginalExtension() === 'gif') {
+            $img = imagecreatefromgif($file->getRealPath());
+    
+            $pngPath = storage_path("app/public/$path/$fileName.png");
+    
+            imagepng($img, $pngPath);
+            imagedestroy($img);
+        }
+    
+        return $gifFileName;
     }
+    
 
     public static function clearImage($path): void
     {

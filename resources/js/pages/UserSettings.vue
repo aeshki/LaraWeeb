@@ -12,7 +12,8 @@ import {
   DefaultButton,
   TextInput,
   FileInput,
-  SwitchInput
+  SwitchInput,
+  ColorInput
 } from '@/components/common';
 
 import {
@@ -136,6 +137,12 @@ onFulfilled((data) => router.push(`/@${data.value.user.username}`));
               @click.prevent='handleRemoveBanner'
             />
           </div>
+
+          <ColorInput
+              id='banner'
+              label='Couleur de la bannière'
+              v-model='form.banner_color'
+            />
         </div>
 
         <div class='flex flex-col gap-3'>
@@ -147,6 +154,7 @@ onFulfilled((data) => router.push(`/@${data.value.user.username}`));
               :path='form.avatar === authStore.user.avatar ? form.avatar : null'
               :absolutePath='avatarPreview'
               :username='form.username'
+              :gif-static='false'
             />
 
             <div class='flex flex-col mobileLarge:flex-row mobileLarge:items-center gap-2'>
