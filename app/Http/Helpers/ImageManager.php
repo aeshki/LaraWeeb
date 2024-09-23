@@ -10,7 +10,7 @@ trait ImageManager
     public static function saveImage(UploadedFile $file, string $fileName, string $path, bool $clear = true): string
     {
         if ($clear) {
-            self::clearImage($path);
+            self::clearImage("$path/$fileName");
         }
 
         $fileName = "$fileName.".$file->getClientOriginalExtension();
@@ -22,7 +22,7 @@ trait ImageManager
 
     public static function clearImage($path): void
     {
-        $images = glob(public_path("storage/public/$path".".*"));
+        $images = glob(public_path("storage/$path.*"));
 
         foreach ($images as $image_path) {
             File::delete($image_path);
@@ -31,7 +31,7 @@ trait ImageManager
 
     public static function removeImage($path): bool
     {
-        $path = public_path("storage/public/$path");
+        $path = public_path("storage/$path");
 
         return File::exists($path) && File::delete($path);
     }

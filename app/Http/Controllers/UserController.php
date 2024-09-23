@@ -53,19 +53,25 @@ class UserController extends Controller
     {
         $this->authorize('update', $user);
 
-        $user->fill($req->validated());
+        $user->fill($req->safe()->except([ 'avatar', 'banner' ]));
 
         $avatarFile = $req->file('avatar');
 
         if ($avatarFile) {
             $user->avatar = $this->saveImage($avatarFile, $req->user()->id, 'avatars');
-        }
+        } else if ($req->has('avatar') && !$avatarFile) {
+            $this->removeImage("avatars/$user->avatar");
+            $user->avatar = null;
+        };
 
         $bannerFile = $req->file('banner');
 
         if ($bannerFile) {
             $user->banner = $this->saveImage($bannerFile, $req->user()->id, 'banners');
-        }
+        } else if ($req->has('banner') && !$bannerFile) {
+            $this->removeImage("banners/$user->banner");
+            $user->banner = null;
+        };
 
         $user->save();
 
