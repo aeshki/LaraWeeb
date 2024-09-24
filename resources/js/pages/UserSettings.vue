@@ -106,6 +106,24 @@ const handleSubmit = () => {
   fetchRequest(formData);
 }
 
+const handleLogout = () => {
+  const { onFulfilled } = useAxios('/auth/logout');
+
+  onFulfilled(() => {
+    router.push('/auth/login');
+  });
+};
+
+const handleDeleteAccount = () => {
+  if (confirm('Voulez-vous vraiment supprimer votre compte ?')) {
+    const { onFulfilled } = useAxios('/api/users/@me', { method: 'DELETE' });
+  
+    onFulfilled(() => {
+      router.push('/auth/login');
+    });
+  }
+};
+
 onFulfilled((data) => router.push(`/@${data.value.user.username}`));
 </script>
 
@@ -241,8 +259,8 @@ onFulfilled((data) => router.push(`/@${data.value.user.username}`));
       </form>
 
       <div class='flex gap-2'>
-        <!-- <RoundedButton text='Logout' @click='() => authStore.handleLogout()' /> -->
-        <!-- <RoundedButton text='Delete account' @click='() => authStore.handleDeleteAccount()' /> -->
+        <RoundedButton text='Déconnexion' @click='handleLogout' />
+        <RoundedButton text='Suppression de compte' @click='handleDeleteAccount' />
       </div>
     </div>
   </div>

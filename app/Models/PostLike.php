@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class PostLike extends Model
+class PostLike extends Pivot
 {
     protected $fillable = [
         'user_id',

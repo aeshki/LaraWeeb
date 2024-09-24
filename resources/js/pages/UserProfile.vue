@@ -134,9 +134,13 @@ const handlePostUnliked = (postId) => {
       </div>
       <!-- STATS -->
       <div class='mt-1'>
-        <p v-if='!loading'>
-          <span class='text-neutral-200 font-bold text-base'>{{ totalLikes }}</span> Likes
-        </p>
+        <div
+          v-if='!loading'
+          class='flex gap-2 *:font-bold *:text-base'
+        >
+          <p>{{ totalLikes }} <span class='text-neutral-300 text-sm font-normal'>Likes</span></p>
+          <p v-if='user.login_streak'>{{ user.login_streak }} <span class='text-neutral-300 text-sm font-normal'>Jours d'activité</span></p>
+        </div>
       </div>
     </div>
     <!-- TABS -->

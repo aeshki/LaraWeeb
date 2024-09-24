@@ -7,6 +7,8 @@ import useAxios from '@/utils/useAxios';
 import { Trash2} from 'lucide-vue-next';
 import UserAvatar from '@/components/User/Avatar.vue';
 
+import { haveFlag } from '@/utils/badge';
+
 const props = defineProps({
     id: [Number, String],
     author: Object,

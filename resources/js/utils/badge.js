@@ -1,5 +1,3 @@
-import { HandHeart } from 'lucide-vue-next';
-
 import {
     DeveloperIcon,
     StaffIcon,
@@ -9,19 +7,19 @@ import {
 export const BADGE_FLAGS = {
     STAFF: 1 << 0,
     DEVELOPER: 1 << 1,
-    STAR: 1 << 2
+    NEW_MEMBER: 1 << 2
 };
 
 export const BADGE_ICONS = {
     STAFF: StaffIcon,
     DEVELOPER: DeveloperIcon,
-    STAR: NewMemberIcon
+    NEW_MEMBER: NewMemberIcon
 };
 
 export const BADGE_LABELS = {
     STAFF: 'Staff LaraWeeb',
     DEVELOPER:'Développeur LaraWeeb',
-    STAR: 'Une Star !'
+    NEW_MEMBER: 'Souhaite moi la bienvenue !'
 };
 
 export const bitwiseToBadgeKeys = (bitwise) => {

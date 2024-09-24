@@ -26,6 +26,9 @@ return new class extends Migration
             $table->string('favorite_manga')->nullable();
             $table->string('favorite_webtoon')->nullable();
 
+            $table->boolean('logged_today')->default(false);
+            $table->integer('login_streak')->default(0);
+
             $table->string('email')->unique();
 
             $table->string('password');
@@ -33,7 +36,6 @@ return new class extends Migration
             $table->timestamp('email_verified_at')
                 ->nullable()
                 ->default(now());
-
 
             $table->boolean('active')->default(true);
 

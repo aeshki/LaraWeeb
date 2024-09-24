@@ -57,6 +57,10 @@ const routes = [
                 component: () => import('@/components/common/forms/Register.vue')
             },
             {
+                path: 'password/reset',
+                component: () => import('@/components/common/forms/ResetPassword.vue')
+            },
+            {
                 path: ':any(.*)',
                 redirect: '/auth/login'
             }, 

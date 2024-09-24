@@ -18,7 +18,7 @@ class PostController extends Controller
 
     public function index(Request $request)
     {        
-        $query = Post::public()->with('author:id,avatar,pseudo,username');
+        $query = Post::public()->with('author');
         
         if ($request->has('tag')) {
             $tagName = $request->query('tag');
@@ -45,7 +45,7 @@ class PostController extends Controller
 
         return response()->json([
             'message' => 'Post show.',
-            'post' => $post->load('author:id,avatar,pseudo,username')
+            'post' => $post->load('author')
         ]);
     }
 

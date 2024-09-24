@@ -9,8 +9,16 @@ Route::controller(AuthController::class)->group(function () {
 
     Route::post('/register', 'register')
         ->name('register');
-
+        
     Route::get('/logout', 'logout')
         ->middleware('auth:sanctum')
         ->name('logout');
+    
+    Route::post('/password/forgot', 'forgotPassword')
+        ->name('password.email')
+        ->middleware('guest');
+
+    Route::post('/password/reset', 'resetPassword')
+        ->name('password.reset')
+        ->middleware('guest');
 });

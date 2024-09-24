@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\UserBadges;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
@@ -37,6 +38,7 @@ class User extends Authenticatable
         'email_verified_at',
         'password',
         'remember_token',
+        'logged_today'
     ];
 
     protected $appends = [
@@ -77,6 +79,10 @@ class User extends Authenticatable
 
         if ($this->is_super_admin) {
             $flags |= UserBadges::STAFF->value;
+        }
+
+        if ($this->created_at->greaterThan(Carbon::now()->subWeek())) {
+            $flags |= UserBadges::NEW_MEMBER->value;
         }
 
         return $flags;

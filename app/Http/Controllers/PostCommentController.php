@@ -9,7 +9,7 @@ class PostCommentController extends Controller
 {
     public function index(Post $post)
     {
-        if (!Auth::user()->is_super_admin && Auth::id() !== $post->author->id) {
+        if (!Auth::user()->is_super_admin && $post->author->is_private && (Auth::id() !== $post->author->id)) {
             abort(404, 'Not Found');
         };
 

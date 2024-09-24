@@ -27,6 +27,18 @@ onFulfilled((data) => {
     authStore.setUser(data.value.user);
     router.push('/');
 });
+
+const handleForgotPassword = () => {
+    const { onFulfilled } = useAxios('/auth/password/forgot', {
+        method: 'POST',
+        data: { email: form.email }
+    });
+
+    onFulfilled(() => {
+        form.email = '';
+        form.password = '';
+    });
+}
 </script>
 
 <template>
@@ -59,6 +71,12 @@ onFulfilled((data) => {
             :error='errors.global'
             v-model='form.password'
         />
+
+        <span
+            v-if='form.email?.includes("@") && errors.global'
+            class='text-indigo-600 text-shadow-indigo-300 cursor-pointer'
+            @click='handleForgotPassword'
+        >Mot de passe oublié ?</span>
 
         <template #footer>
             <DefaultButton :loading='loading' text='Connexion' />

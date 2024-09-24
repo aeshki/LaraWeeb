@@ -15,7 +15,7 @@ class StorePostRequest extends FormRequest
     {
         return [
             'message' => 'required_without:image|nullable|string|between:2,2000',
-            'image' => 'nullable|file'
+            'image' => 'nullable|file|image'
         ];
     }
 }

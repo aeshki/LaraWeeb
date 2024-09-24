@@ -8,8 +8,11 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
-
+use App\Mail\PasswordResetMail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Response;
 
 class AuthController extends Controller
 {
@@ -49,8 +52,45 @@ class AuthController extends Controller
         $req->session()->regenerateToken();
 
         return response()->json([
-            'ok' => true,
             'message' => 'User logout.'
+        ]);
+    }
+
+    public function forgotPassword(Request $req)
+    { 
+        $req->validate([ 'email' => 'required|email' ]);
+
+        $user = User::where('email', $req->email)->first();
+    
+        if (!$user) {
+            return Response::json(['message' => 'User not found.'], 404);
+        }
+    
+        $token = app('auth.password.broker')->createToken($user);
+    
+        Mail::to($user->email)->send(new PasswordResetMail($token, $user->email));
+    
+        return Response::json([ 'message' => 'Reset link sent' ]);
+    }
+
+    public function resetPassword(Request $req)
+    { 
+        $req->validate([
+            'email' => 'required|email',
+            'password' => 'required|confirmed|min:8',
+            'token' => 'required',
+        ]);
+
+        Password::reset(
+            $req->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->password = bcrypt($password);
+                $user->save();
+            }
+        );
+
+        return Response::json([
+            'message' => 'Password changed successfully'
         ]);
     }
 }

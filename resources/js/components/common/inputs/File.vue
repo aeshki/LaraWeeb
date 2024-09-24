@@ -21,7 +21,12 @@ const model = defineModel();
 const fileInput = ref(null);
 
 const handleChange = (e) => {
-    model.value = props.multiple ? e.target.files : e.target.files[0];
+    const files = e.target.files;
+    const acceptedFiles = [ ...files ].filter(file => {
+        return props.accept.split(',').map(type => type.trim()).includes(file.type);
+    });
+
+    model.value = props.multiple ? acceptedFiles : acceptedFiles[0];
 };
 
 watch(model, (newValue) => {

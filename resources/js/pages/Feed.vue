@@ -48,7 +48,7 @@ const handlePostDeleted = (postId) => {
             v-bind='post'
         />
         <p 
-            v-if='to % per_page !== 0'
+            v-if='!loading && (to % per_page !== 0)'
             class='my-4 text-center'
         >On dirait bien que tu as plus aucun poste à voir :O</p>
     </ul>
